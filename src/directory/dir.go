@@ -1,4 +1,4 @@
-package common
+package directory
 
 import (
 	"os"
@@ -18,7 +18,7 @@ func DirExists(path string) (bool, error) {
 	return true, err
 }
 
-func cmdExec(cmdStr string,args...string){
+func cmdExec(cmdStr string, args ...string) {
 	//cmd := exec.Command(cmdStr,args)
 	//var out bytes.Buffer
 	//cmd.Stdout = &out
