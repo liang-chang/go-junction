@@ -1,0 +1,31 @@
+[targetConfig]
+# 原始文件夹重命名备份
+renameTargetFolder = false
+
+# 清空原始文件夹
+clearTargetFolder = true
+
+#当目录文件夹无效时，跳过
+skipInvalidTarget = false
+
+[pathAlias]
+#build in path variable 
+# UserHome
+# Temp
+useless='C:\useless'
+chrome_cache='V:\chrome_cache'
+firefox_cache='V:\firefox_cache'
+
+[[junction]]
+target = '{useless}/A'
+link = [
+'d:/|\d+$|/bin',
+'v:/|cache$|'
+]
+
+[[junction]]
+target = '{useless}/B'
+link = [
+'d:/|\d+$|/bin',
+'v:/|chrome$|'
+]

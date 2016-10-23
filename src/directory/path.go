@@ -10,7 +10,7 @@ import (
 
 func GetPatternDir(path string)[]string  {
 
-	diskReg := regexp.MustCompile(`(?i)[a-z]:(\\|/)`)
+	diskReg := regexp.MustCompile(`(?i)[a-z]:`)
 
 	matchRet := diskReg.FindStringSubmatch(path)
 
@@ -38,7 +38,7 @@ func GetPatternDir(path string)[]string  {
 
 	for _, v := range dirNames {
 
-		//		path := v[0]
+		//path := v[0]
 
 		fileSplit := v[1]
 

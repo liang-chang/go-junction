@@ -2,6 +2,7 @@ package main
 
 import (
 	"directory"
+	"config"
 	//	"fmt"
 	//	"regexp"
 	//"log"
@@ -17,24 +18,28 @@ import (
 	//	"log"
 	//"io/ioutil"
 	//"fmt"
+
 	"os"
 	"fmt"
 )
 
 func main() {
-	//fmt.Println(os.Args)
-	//fmt.Println(dir)
-	//directory.GetPatternDir(`e:/|eclipse[-\w]+workspace|/.metadata/.plugins`)
-	ret := directory.GetPatternDir(`d:/|\d+$|/bin/`)
+	fmt.Println(os.Args)
+
+	config.Init();
+
+	ret := directory.GetPatternDir(`d:/|\d+$|/bin`)
 	for _, v := range ret {
 		_, err := os.Stat(v)
 		if err != nil {
 			fmt.Println(v + " err")
 		}
 		if os.IsNotExist(err) {
-			fmt.Println(v + "not exist")
+			fmt.Println(v + " invalid")
 		} else {
-			fmt.Println(v + " exist")
+			fmt.Println(v)
 		}
 	}
+
 }
+
