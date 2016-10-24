@@ -2,29 +2,34 @@ package config
 
 import (
 	"flag"
-	"fmt"
 	"github.com/BurntSushi/toml"
 	"log"
 	"os"
 )
 
 const (
+	actionParamName = "action"
+
+	actionDefault = "check"
+
+	actoinUsageText = "action can only one of those: check create update"
+
 	//参数默认名称
 	configParamName = "config"
 
 	//默认配置文件夹名
-	configFileName = "config.ini"
+	configFileDefaultName = "config.ini"
 
 	//提示语
-	usageText = "config file name"
+	configUsageText = "config file name"
 )
 
-func Init() {
+func Parse() config {
+	var actionName = flag.String(actionParamName, actionDefault, actoinUsageText)
 
-	var configFileName = flag.String(configParamName, configFileName, usageText)
+	var configFileName = flag.String(configParamName, configFileDefaultName, configUsageText)
 
 	flag.Parse();
-
 
 	var config config
 
@@ -33,14 +38,7 @@ func Init() {
 		os.Exit(1)
 	}
 
-	fmt.Println(config.PathAlias)
-	//
-	//for _, name := range []string{"alpha", "beta"} {
-	//	s := config[name]
-	//	fmt.Printf("Server: %s (ip: %s) in %s created on %s\n",
-	//		name, s.IP, s.Config.Location,
-	//		s.Config.Created.Format("2006-01-02"))
-	//	fmt.Printf("Ports: %v\n", s.Config.Ports)
-	//}
+	config.ActionName = *actionName
 
+	return config
 }

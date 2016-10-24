@@ -7,7 +7,7 @@ import (
 	//"fmt"
 )
 
-func DirExists(path string) (bool, error) {
+func DirectoryExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
 		return true, nil

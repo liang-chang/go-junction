@@ -21,12 +21,17 @@ import (
 
 	"os"
 	"fmt"
+	"syscall"
 )
 
 func main() {
-	fmt.Println(os.Args)
 
-	config.Init();
+
+
+	config := config.Parse();
+
+	fmt.Println(config.PathAlias)
+	fmt.Println(config.Junction)
 
 	ret := directory.GetPatternDir(`d:/|\d+$|/bin`)
 	for _, v := range ret {
