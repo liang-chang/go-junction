@@ -1,454 +1,299 @@
-package main
+package junction
+
+//https://msdn.microsoft.com/en-us/library/cc232006.aspx
+//https://gist.github.com/Perlmint/f9f0e37db163dd69317d
+//https://github.com/golang/go/blob/master/src/os/os_windows_test.go
 
 import (
 	"directory"
-	"config"
-	//	"fmt"
-	//	"regexp"
-	//"log"
-	//	"os"
-	//	"os/exec"
-	//	"path/filepath"
-	//	"strings"
-	//	"bytes"
-	//	"strings"
-	//	"bytes"
-	//	"path/filepath"
-	//	"os"
-	//	"log"
-	//"io/ioutil"
-	//"fmt"
-
 	"os"
 	"fmt"
 	"syscall"
-	"unsafe"
 	"path/filepath"
+	//"encoding/binary"
+
+	//"bytes"
+	"unsafe"
+	"unicode/utf16"
+	"strings"
+	"errors"
 )
 
-/// <summary>
 /// The file or directory is not a reparse point.
-/// </summary>
 const ERROR_NOT_A_REPARSE_POINT = 4390;
 
-/// <summary>
 /// The reparse point attribute cannot be set because it conflicts with an existing attribute.
-/// </summary>
 const ERROR_REPARSE_ATTRIBUTE_CONFLICT = 4391;
 
-/// <summary>
 /// The data present in the reparse point buffer is invalid.
-/// </summary>
 const ERROR_INVALID_REPARSE_DATA = 4392;
 
-/// <summary>
 /// The tag present in the reparse point buffer is invalid.
-/// </summary>
 const ERROR_REPARSE_TAG_INVALID = 4393;
 
-/// <summary>
 /// There is a mismatch between the tag specified in the request and the tag present in the reparse point.
-/// </summary>
 const ERROR_REPARSE_TAG_MISMATCH = 4394;
 
-/// <summary>
 /// Command to set the reparse point data block.
-/// </summary>
 const FSCTL_SET_REPARSE_POINT = 0x000900A4;
 
-/// <summary>
 /// Command to get the reparse point data block.
-/// </summary>
 const FSCTL_GET_REPARSE_POINT = 0x000900A8;
 
-/// <summary>
 /// Command to delete the reparse point data base.
-/// </summary>
 const FSCTL_DELETE_REPARSE_POINT = 0x000900AC;
 
-/// <summary>
 /// Reparse point tag used to identify mount points and junction points.
-/// </summary>
 const IO_REPARSE_TAG_MOUNT_POINT = 0xA0000003;
 
-/// <summary>
 /// This prefix indicates to NTFS that the path is to be treated as a non-interpreted
 /// path in the virtual file system.
-/// </summary>
 const NonInterpretedPathPrefix = `\??\`;
 
-type EFileAccess  uint
-
-var (
-	EFileAccess_GenericRead EFileAccess = 0x80000000
-	EFileAccess_GenericWrite EFileAccess = 0x40000000
-	EFileAccess_GenericExecute EFileAccess = 0x20000000
-	EFileAccess_GenericAll EFileAccess = 0x10000000
-)
-
-type  EFileShare uint
-
-var (
-	EFileShare_None EFileShare = 0x00000000
-	EFileShare_Read EFileShare = 0x00000001
-	EFileShare_Write EFileShare = 0x00000002
-	EFileShare_Delete EFileShare = 0x00000004
-)
-
-type  ECreationDisposition  uint
-
-var (
-	ECreationDisposition_New ECreationDisposition = 1
-	ECreationDisposition_CreateAlways ECreationDisposition = 2
-	ECreationDisposition_OpenExisting ECreationDisposition = 3
-	ECreationDisposition_OpenAlways ECreationDisposition = 4
-	ECreationDisposition_TruncateExisting ECreationDisposition = 5
-)
-
-type  EFileAttributes  uint
-
-var (
-	EFileAttributes_Readonly EFileAttributes = 0x00000001
-	EFileAttributes_Hidden EFileAttributes = 0x00000002
-	EFileAttributes_System EFileAttributes = 0x00000004
-	EFileAttributes_Directory EFileAttributes = 0x00000010
-	EFileAttributes_Archive EFileAttributes = 0x00000020
-	EFileAttributes_Device EFileAttributes = 0x00000040
-	EFileAttributes_Normal EFileAttributes = 0x00000080
-	EFileAttributes_Temporary EFileAttributes = 0x00000100
-	EFileAttributes_SparseFile EFileAttributes = 0x00000200
-	EFileAttributes_ReparsePoint EFileAttributes = 0x00000400
-	EFileAttributes_Compressed EFileAttributes = 0x00000800
-	EFileAttributes_Offline EFileAttributes = 0x00001000
-	EFileAttributes_NotContentIndexed EFileAttributes = 0x00002000
-	EFileAttributes_Encrypted EFileAttributes = 0x00004000
-	EFileAttributes_Write_Through EFileAttributes = 0x80000000
-	EFileAttributes_Overlapped EFileAttributes = 0x40000000
-	EFileAttributes_NoBuffering EFileAttributes = 0x20000000
-	EFileAttributes_RandomAccess EFileAttributes = 0x10000000
-	EFileAttributes_SequentialScan EFileAttributes = 0x08000000
-	EFileAttributes_DeleteOnClose EFileAttributes = 0x04000000
-	EFileAttributes_BackupSemantics EFileAttributes = 0x02000000
-	EFileAttributes_PosixSemantics EFileAttributes = 0x01000000
-	EFileAttributes_OpenReparsePoint EFileAttributes = 0x00200000
-	EFileAttributes_OpenNoRecall EFileAttributes = 0x00100000
-	EFileAttributes_FirstPipeInstance EFileAttributes = 0x00080000
-)
-
 type   REPARSE_DATA_BUFFER struct {
-	/// <summary>
 	/// Reparse point tag. Must be a Microsoft reparse point tag.
-	/// </summary>
-	ReparseTag           uint
+	ReparseTag           uint32
 
-	/// <summary>
 	/// Size, in bytes, of the data after the Reserved member. This can be calculated by:
 	/// (4 * sizeof(ushort)) + SubstituteNameLength + PrintNameLength +
 	/// (namesAreNullTerminated ? 2 * sizeof(char) : 0);
-	/// </summary>
 	ReparseDataLength    uint16
 
-	/// <summary>
 	/// Reserved; do not use.
-	/// </summary>
 	Reserved             uint16
 
-	/// <summary>
 	/// Offset, in bytes, of the substitute name string in the PathBuffer array.
-	/// </summary>
 	SubstituteNameOffset uint16
 
-	/// <summary>
 	/// Length, in bytes, of the substitute name string. If this string is null-terminated,
 	/// SubstituteNameLength does not include space for the null character.
-	/// </summary>
-	SubstituteNameLength
+	SubstituteNameLength uint16
 
-	/// <summary>
 	/// Offset, in bytes, of the print name string in the PathBuffer array.
-	/// </summary>
 	PrintNameOffset      uint16
 
-	/// <summary>
 	/// Length, in bytes, of the print name string. If this string is null-terminated,
 	/// PrintNameLength does not include space for the null character.
-	/// </summary>
 	PrintNameLength      uint16
 
-	/// <summary>
 	/// A buffer containing the unicode-encoded path string. The path string contains
 	/// the substitute name string and print name string.
-	/// </summary>
-	PathBuffer           []uint8
+	//PathBuffer           [1]uint16
+
+	Flags                uint32
+
+	// SubstituteName - 264 widechars = 528 bytes
+	// PrintName      - 260 widechars = 520 bytes
+	//                                = 1048 bytes total
+	PathBuffer           [1048]uint16
 }
 
-/*
-syscall.DeviceIoControl(
-handle Handle,
-ioControlCode uint32,
-inBuffer *byte,
-inBufferSize uint32,
-outBuffer *byte,
-outBufferSize uint32,
-bytesReturned *uint32,
-overlapped *Overlapped) (err error) {
+func (r *REPARSE_DATA_BUFFER) PrintName() string {
+	offset := r.PrintNameOffset / 2//微软官方文档中说要除了2
+	length := r.PrintNameLength / 2
+	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
 }
-*/
-func DeviceIoControl(handle Handle, ioControlCode uint32, inBuffer *byte, inBufferSize uint32, outBuffer *byte, outBufferSize uint32, bytesReturned *uint32, overlapped *Overlapped) (err error)  {
-	return syscall.DeviceIoControl(handle,ioControlCode,inBuffer,inBufferSize,outBuffer,outBufferSize,bytesReturned,overlapped);
-}
-/*
-[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-private static extern bool DeviceIoControl(IntPtr hDevice, uint dwIoControlCode,
-IntPtr InBuffer, int nInBufferSize,
-IntPtr OutBuffer, int nOutBufferSize,
-out int pBytesReturned, IntPtr lpOverlapped);
-*/
 
-func CreateFile(name *uint16, access uint32, mode uint32, sa *SecurityAttributes, createmode uint32, attrs uint32, templatefile int32) (handle Handle, err error) {
-	return syscall.CreateFile(name,access,mode,sa,createmode,attrs,templatefile);
+func (r *REPARSE_DATA_BUFFER) SubstituteName() string {
+	offset := r.SubstituteNameOffset / 2//微软官方文档中说要除了2
+	length := r.SubstituteNameLength / 2
+	//fmt.Println(string(utf16.Decode(r.PathBuffer[:])))
+	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
 }
-/*
-[DllImport("kernel32.dll", SetLastError = true)]
-private static extern IntPtr CreateFile(
-string lpFileName,
-EFileAccess dwDesiredAccess,
-EFileShare dwShareMode,
-IntPtr lpSecurityAttributes,
-ECreationDisposition dwCreationDisposition,
-EFileAttributes dwFlagsAndAttributes,
-IntPtr hTemplateFile);
-*/
-/// <summary>
+
+
 /// Creates a junction point from the specified directory to the specified target directory.
-/// </summary>
-/// <remarks>
 /// Only works on NTFS.
-/// </remarks>
-/// <param name="junctionPoint">The junction point path</param>
-/// <param name="targetDir">The target directory</param>
-/// <param name="overwrite">If true overwrites an existing reparse point or empty directory</param>
-/// <exception cref="IOException">Thrown when the junction point could not be created or when
-/// an existing directory was found and <paramref name="overwrite" /> if false</exception>
-func Create(junctionPoint string, targetDir string, overwrite bool) bool {
-	targetDir,_ = filepath.Abs(targetDir)
-
-	var exists bool
-	if exists, _ = directory.DirectoryExists(targetDir); exists == false {
-		fmt.Println(targetDir + " does not exist or is not a directory.")
-		return false
-		//log(targetDir + " does not exist or is not a directory.");
-		//throw
-		//new
-		//IOException("Target path does not exist or is not a directory.");
-		//return false;
+func Create(junctionPoint string, targetDir string, overwrite bool) (result bool, err error) {
+	targetDir, err = filepath.Abs(targetDir)
+	if err != nil {
+		return false, err
 	}
 
-	if exists, _ = directory.DirectoryExists(junctionPoint); exists == false {
+	var exist bool
+	if exist, err = directory.DirectoryExist(junctionPoint); err != nil {
+		return false, err
+	}
+
+	if exist {
 		if !overwrite {
-			fmt.Println(junctionPoint + " already exists and overwrite parameter is false.")
-			//log(junctionPoint + " already exists and overwrite parameter is false.");
-			//throw
-			//new
-			//IOException("Directory already exists and overwrite parameter is false.");
-			return false;
+			return false, errors.New("Directory already exists and overwrite parameter is false.")
 		}
 	} else {
-		os.MkdirAll(junctionPoint, 0777);
-
-		//Directory.CreateDirectory(junctionPoint);
-	}
-
-	using(SafeFileHandlehandle = OpenReparsePoint(junctionPoint, EFileAccess.GenericWrite))
-	{
-		byte[] targetDirBytes = Encoding.Unicode.GetBytes(NonInterpretedPathPrefix + Path.GetFullPath(targetDir));
-
-		REPARSE_DATA_BUFFER reparseDataBuffer = new REPARSE_DATA_BUFFER();
-
-		reparseDataBuffer.ReparseTag = IO_REPARSE_TAG_MOUNT_POINT;
-		reparseDataBuffer.ReparseDataLength = (ushort)(targetDirBytes.Length + 12);
-		reparseDataBuffer.SubstituteNameOffset = 0;
-		reparseDataBuffer.SubstituteNameLength = (ushort)targetDirBytes.Length;
-		reparseDataBuffer.PrintNameOffset = (ushort)(targetDirBytes.Length + 2);
-		reparseDataBuffer.PrintNameLength = 0;
-		reparseDataBuffer.PathBuffer = new byte[0x3ff0];
-		Array.Copy(targetDirBytes, reparseDataBuffer.PathBuffer, targetDirBytes.Length);
-
-		int inBufferSize = Marshal.SizeOf(reparseDataBuffer);
-		IntPtr inBuffer = Marshal.AllocHGlobal(inBufferSize);
-
-		try
-		{
-			Marshal.StructureToPtr(reparseDataBuffer, inBuffer, false);
-
-			int bytesReturned;
-			bool result = DeviceIoControl(handle.DangerousGetHandle(), FSCTL_SET_REPARSE_POINT,
-			inBuffer, targetDirBytes.Length + 20, IntPtr.Zero, 0, out bytesReturned, IntPtr.Zero);
-
-			if (!result)
-				ThrowLastWin32Error("Unable to create junction point.");
-		}
-		finally
-		{
-			Marshal.FreeHGlobal(inBuffer);
+		if err = os.MkdirAll(junctionPoint, 0777); err != nil {
+			return false, err
 		}
 	}
+
+	var handle syscall.Handle
+	handle, err = openReparsePoint(junctionPoint, syscall.GENERIC_WRITE)
+
+	defer syscall.CloseHandle(handle)
+
+	substituteName := syscall.StringToUTF16(NonInterpretedPathPrefix + targetDir)
+
+	printName := syscall.StringToUTF16(targetDir)
+
+	fmt.Println("1=" + string(utf16.Decode(substituteName)))
+
+	reparseDataBuffer := REPARSE_DATA_BUFFER{}
+
+	reparseDataBuffer.ReparseTag = IO_REPARSE_TAG_MOUNT_POINT
+	reparseDataBuffer.ReparseDataLength = 1048 * 2 + 12  //官方文档  the size of the PathBuffer field, in bytes, plus 12
+
+	reparseDataBuffer.Reserved = 0
+
+	reparseDataBuffer.SubstituteNameOffset = 0
+	reparseDataBuffer.SubstituteNameLength = uint16(len(NonInterpretedPathPrefix + targetDir) * 2)
+
+	reparseDataBuffer.PrintNameOffset = uint16((len(NonInterpretedPathPrefix + targetDir)+1) * 2)
+	reparseDataBuffer.PrintNameLength = uint16(len(targetDir) * 2)
+	//reparseDataBuffer.PathBuffer = targetDirBytes//targetDirBytes[0:len(targetDirBytes) - 1]//Array.Copy(targetDirBytes, reparseDataBuffer.PathBuffer, targetDirBytes.Length);
+	//copy(reparseDataBuffer.PathBuffer[:], substituteName);
+
+	reparseDataBuffer.Flags = 0
+
+	for i := 0; i < len(substituteName); i++ {
+		reparseDataBuffer.PathBuffer[i] = substituteName[i]
+	}
+	for i := 0; i < len(printName); i++ {
+		reparseDataBuffer.PathBuffer[int(reparseDataBuffer.PrintNameOffset) / 2 + i] = printName[i]
+	}
+
+	fmt.Println("2=" + reparseDataBuffer.SubstituteName())
+	fmt.Println("3=" + reparseDataBuffer.PrintName())
+
+	fmt.Println(string(utf16.Decode(reparseDataBuffer.PathBuffer[:])))
+
+	var bytesReturned uint32;
+
+	err = syscall.DeviceIoControl(handle, FSCTL_SET_REPARSE_POINT,
+		(*byte)(unsafe.Pointer(&reparseDataBuffer)), uint32(unsafe.Sizeof(reparseDataBuffer) ), nil, 0, &bytesReturned, nil);
+
+	//+ unsafe.Offsetof(reparseDataBuffer.SubstituteNameOffset)
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
-/// <summary>
 /// Deletes a junction point at the specified source directory along with the directory itself.
 /// Does nothing if the junction point does not exist.
-/// </summary>
-/// <remarks>
 /// Only works on NTFS.
-/// </remarks>
-/// <param name="junctionPoint">The junction point path</param>
-public static void Delete(string junctionPoint)
-{
-	if (!Directory.Exists(junctionPoint))
-	{
-		if (File.Exists(junctionPoint))
-			throw new IOException("Path is not a junction point.");
-		return;
+func Delete(junctionPoint string) (result bool, err error) {
+	var exist bool
+	if exist, err = directory.DirectoryExist(junctionPoint); err != nil || exist == false {
+		return false, errors.New("directory can not open or not exist.");
 	}
 
-	using (SafeFileHandle handle = OpenReparsePoint(junctionPoint, EFileAccess.GenericWrite))
-	{
-		REPARSE_DATA_BUFFER reparseDataBuffer = new REPARSE_DATA_BUFFER();
+	var handle syscall.Handle
 
-		reparseDataBuffer.ReparseTag = IO_REPARSE_TAG_MOUNT_POINT;
-		reparseDataBuffer.ReparseDataLength = 0;
-		reparseDataBuffer.PathBuffer = new byte[0x3ff0];
+	handle, err = openReparsePoint(junctionPoint, syscall.GENERIC_WRITE)
 
-		int inBufferSize = Marshal.SizeOf(reparseDataBuffer);
-		IntPtr inBuffer = Marshal.AllocHGlobal(inBufferSize);
-		try
-		{
-			Marshal.StructureToPtr(reparseDataBuffer, inBuffer, false);
+	defer syscall.CloseHandle(handle)
 
-			int bytesReturned;
-			bool result = DeviceIoControl(handle.DangerousGetHandle(), FSCTL_DELETE_REPARSE_POINT,
-				inBuffer, 8, IntPtr.Zero, 0, out bytesReturned, IntPtr.Zero);
-
-			if (!result)
-				ThrowLastWin32Error("Unable to delete junction point.");
-		}
-		finally
-		{
-			Marshal.FreeHGlobal(inBuffer);
-		}
-
-		try
-		{
-			Directory.Delete(junctionPoint);
-		}
-		catch (IOException ex)
-		{
-			throw new IOException("Unable to delete junction point.", ex);
-		}
+	if err != nil {
+		return false, err;
 	}
+
+	reparseDataBuffer := REPARSE_DATA_BUFFER{}
+
+	reparseDataBuffer.ReparseTag = IO_REPARSE_TAG_MOUNT_POINT
+	reparseDataBuffer.ReparseDataLength = 0
+	reparseDataBuffer.Reserved=0
+
+	var bytesReturned uint32;
+
+	//第三个参数 inBufferSize 是 8=REPARSE_MOUNTPOINT_HEADER_SIZE
+	//见 http://www.flexhex.com/docs/articles/hard-links.phtml
+	//见根目录下  NTFS Hard Links, Directory Junctions, and Windows Shortcuts.mhtml
+	err = syscall.DeviceIoControl(handle, FSCTL_DELETE_REPARSE_POINT,
+		(*byte)(unsafe.Pointer(&reparseDataBuffer)), 8, nil, 0, &bytesReturned, nil);
+
+	if err != nil {
+		return false, err;
+	}
+
+	err = os.RemoveAll(junctionPoint)
+	if err != nil {
+		return false, err;
+	}
+	return true, err
 }
 
-/// <summary>
 /// Determines whether the specified path exists and refers to a junction point.
-/// </summary>
-/// <param name="path">The junction point path</param>
-/// <returns>True if the specified path represents a junction point</returns>
-/// <exception cref="IOException">Thrown if the specified path is invalid
-/// or some other error occurs</exception>
-public static bool Exists(string path)
-{
-	if (! Directory.Exists(path))
-		return false;
-	using (SafeFileHandle handle = OpenReparsePoint(path, EFileAccess.GenericRead))
-	{
-		string target = InternalGetTarget(handle);
-		return target != null;
+func Exists(path string) bool {
+	var exist bool
+	var err error
+	if exist, err = directory.DirectoryExist(path); err != nil || exist == false {
+		return false
 	}
+	var handle syscall.Handle
+	handle, err = openReparsePoint(path, syscall.GENERIC_READ)
+
+	//安全关闭 句柄
+	defer syscall.CloseHandle(handle)
+
+	if err != nil {
+		return false
+	}
+
+	_, err = internalGetTarget(handle)
+	if err != nil {
+		return false
+	}
+
+	return true
 }
 
-/// <summary>
 /// Gets the target of the specified junction point.
-/// </summary>
-/// <remarks>
 /// Only works on NTFS.
-/// </remarks>
-/// <param name="junctionPoint">The junction point path</param>
-/// <returns>The target of the junction point</returns>
-/// <exception cref="IOException">Thrown when the specified path does not
-/// exist, is invalid, is not a junction point, or some other error occurs</exception>
-public static string GetTarget(string junctionPoint)
-{
-	using (SafeFileHandle handle = OpenReparsePoint(junctionPoint, EFileAccess.GenericRead))
-	{
-		string target = InternalGetTarget(handle);
-		if (target == null)
-			throw new IOException("Path is not a junction point.");
-		return target;
+func GetTarget(junctionPoint string) (target string, err error) {
+	var handle syscall.Handle
+	handle, err = openReparsePoint(junctionPoint, syscall.GENERIC_READ)
+
+	if err == nil {
+		target, err = internalGetTarget(handle);
 	}
+
+	defer syscall.CloseHandle(handle)
+
+	return
+
 }
 
-func  InternalGetTarget(handle Handle) string
-{
-	var reparseDataBuffer REPARSE_DATA_BUFFER
-	var outBufferSize int= unsafe.Sizeof(reparseDataBuffer)
+func internalGetTarget(handle syscall.Handle) (target string, err error) {
 
+	var bytesReturned uint32;
 
-	var outBuffer *[]byte= &[outBufferSize]byte{}
+	var outBuffer REPARSE_DATA_BUFFER;
 
-	try
-	{
-		var  bytesReturned *uint32;
-		bool result = DeviceIoControl(handle, FSCTL_GET_REPARSE_POINT,
-			&[0]byte{}, 0, outBuffer, outBufferSize, bytesReturned, &[0]byte{});
+	err = syscall.DeviceIoControl(handle, syscall.FSCTL_GET_REPARSE_POINT,
+		nil, 0, (*byte)(unsafe.Pointer(&outBuffer)), uint32(unsafe.Sizeof(outBuffer)), &bytesReturned, nil);
 
-		if !result
-		{
-
-			if lasterr:=syscall.GetLastError(); lasterr== ERROR_NOT_A_REPARSE_POINT{
-				fmt.print("Unable to open reparse point.")
-				return nil
-			}
-			panic("Unable to open reparse point.")
-
+	if err == nil {
+		target = outBuffer.SubstituteName();
+		if (strings.HasPrefix(target, NonInterpretedPathPrefix)) {
+			target = target[len(NonInterpretedPathPrefix):]
 		}
-
-		REPARSE_DATA_BUFFER reparseDataBuffer = (REPARSE_DATA_BUFFER)Marshal.PtrToStructure(outBuffer, typeof(REPARSE_DATA_BUFFER));
-
-		if (reparseDataBuffer.ReparseTag != IO_REPARSE_TAG_MOUNT_POINT)
-			return null;
-
-		string targetDir = Encoding.Unicode.GetString(reparseDataBuffer.PathBuffer,reparseDataBuffer.SubstituteNameOffset, reparseDataBuffer.SubstituteNameLength);
-
-		if (targetDir.StartsWith(NonInterpretedPathPrefix))
-			targetDir = targetDir.Substring(NonInterpretedPathPrefix.Length);
-
-		return targetDir;
+	} else {
+		target = ""
 	}
-	finally
-	{
-		Marshal.FreeHGlobal(outBuffer);
-	}
+	return
 }
 
-func OpenReparsePoint(reparsePoint string, accessMode EFileAccess) Handle{
-	handle , err :=CreateFile(reparsePoint,accessMode,EFileShare_Read | EFileShare_Write | EFileShare_Delete,&SecurityAttributes{Length:uint32(unsafe.Sizeof(sa)),InheritHandle:0},	ECreationDisposition_OpenExisting,EFileAttributes_BackupSemantics | EFileAttributes_OpenReparsePoint,0)
-
-	//SafeFileHandle reparsePointHandle = new SafeFileHandle(CreateFile(reparsePoint, accessMode,EFileShare.Read | EFileShare.Write | EFileShare.Delete,
-	//	IntPtr.Zero, ECreationDisposition.OpenExisting,EFileAttributes.BackupSemantics | EFileAttributes.OpenReparsePoint, IntPtr.Zero), true);
-
-	if lasterr:=syscall.GetLastError(); lasterr!=null{
-		panic("Unable to open reparse point.")
-	}
-	//if (Marshal.GetLastWin32Error() != 0)
-	//	ThrowLastWin32Error("Unable to open reparse point.");
-
-	return handle
+func openReparsePoint(reparsePoint string, accessMode uint32) (handle syscall.Handle, err error) {
+	handle, err = syscall.CreateFile(
+		syscall.StringToUTF16Ptr(reparsePoint),
+		accessMode,
+		syscall.FILE_SHARE_READ | syscall.FILE_SHARE_WRITE | syscall.FILE_SHARE_DELETE,
+		nil,
+		syscall.OPEN_EXISTING,
+		syscall.FILE_FLAG_BACKUP_SEMANTICS | syscall.FILE_FLAG_OPEN_REPARSE_POINT,
+		0)
+	return
 }
 
-//private static void ThrowLastWin32Error(string message)
-//{
-//	throw new IOException(message, Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
-//}
-}
-}
+

@@ -21,12 +21,11 @@ import (
 
 	"os"
 	"fmt"
-	"syscall"
+	"junction"
+	//"syscall"
 )
 
 func main() {
-
-
 
 	config := config.Parse();
 
@@ -46,5 +45,11 @@ func main() {
 		}
 	}
 
+	//fmt.Println(junction.GetTarget("V:/TEMP - 目录连接点"));
+	fmt.Println(junction.GetTarget("V:/tt"));
+	//fmt.Println(junction.GetTarget("d:/Users/ZL/AppData/Roaming/Tencent/QQ/temp"));
+	//fmt.Println(junction.Exists("v:/temp"))
+	//fmt.Println(junction.Delete("v:/ttt"))
+	//fmt.Println(junction.Create("v:/aaa", "v:/temp",true))
 }
 
