@@ -19,18 +19,7 @@ import (
 	"errors"
 )
 
-func (r *MountPointReparseBuffer) PrintName() string {
-	offset := r.PrintNameOffset / 2//微软官方文档中说要除了2
-	length := r.PrintNameLength / 2
-	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
-}
 
-func (r *MountPointReparseBuffer) SubstituteName() string {
-	offset := r.SubstituteNameOffset / 2//微软官方文档中说要除了2
-	length := r.SubstituteNameLength / 2
-	//fmt.Println(string(utf16.Decode(r.PathBuffer[:])))
-	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
-}
 
 
 /// Creates a junction point from the specified directory to the specified target directory.
@@ -97,7 +86,7 @@ func Create(junctionPoint string, targetDir string, overwrite bool) (result bool
 	var j, lenth int
 	j = 0
 	lenth = len(printName)
-	for i = len(substituteName); j < lenth; j++{
+	for i = len(substituteName); j < lenth; j++ {
 		reparseDataBuffer.PathBuffer[i + j] = printName[j]
 	}
 
@@ -109,7 +98,7 @@ func Create(junctionPoint string, targetDir string, overwrite bool) (result bool
 	var bytesReturned uint32;
 
 	err = syscall.DeviceIoControl(handle, FSCTL_SET_REPARSE_POINT,
-		(*byte)(unsafe.Pointer(&reparseDataBuffer)), uint32(unsafe.Sizeof(reparseDataBuffer)+20), nil, 0, &bytesReturned, nil);
+		(*byte)(unsafe.Pointer(&reparseDataBuffer)), uint32(unsafe.Sizeof(reparseDataBuffer) + 20), nil, 0, &bytesReturned, nil);
 
 	//+ unsafe.Offsetof(reparseDataBuffer.SubstituteNameOffset)
 
@@ -193,7 +182,7 @@ func IsJunction(path string) bool {
 
 /// Gets the target of the specified junction point.
 /// Only works on NTFS.
-func GetTarget(junctionPoint string) (target string, err error) {
+func GetJunctionTarget(junctionPoint string) (target string, err error) {
 
 	var handle syscall.Handle
 	handle, err = openReparsePoint(junctionPoint, syscall.GENERIC_READ)
@@ -212,8 +201,10 @@ func internalGetTarget(handle syscall.Handle) (target string, err error) {
 
 	var bytesReturned uint32;
 
-	var outBuffer MountPointReparseBuffer;
+	var outBuffer SymbolicLinkReparseBuffer;
 
+	//junction point => IO_REPARSE_TAG_MOUNT_POINT (0xA0000003).
+	//symbolink point => SYMBOLIC_LINK_FLAG_DIRECTORY  (0xA000000C)
 	err = syscall.DeviceIoControl(handle, syscall.FSCTL_GET_REPARSE_POINT,
 		nil, 0, (*byte)(unsafe.Pointer(&outBuffer)), uint32(unsafe.Sizeof(outBuffer)), &bytesReturned, nil);
 

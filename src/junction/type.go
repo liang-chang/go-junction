@@ -1,5 +1,7 @@
 package junction
 
+import "unicode/utf16"
+
 //https://msdn.microsoft.com/en-us/library/cc232006.aspx
 //https://gist.github.com/Perlmint/f9f0e37db163dd69317d
 //https://github.com/golang/go/blob/master/src/os/os_windows_test.go
@@ -44,8 +46,58 @@ type REPARSE_DATA_BUFFER_HEADER struct {
 }
 
 //https://msdn.microsoft.com/en-us/library/ff552012.aspx
-//https://msdn.microsoft.com/en-us/library/cc232007.aspx
+//https://msdn.microsoft.com/en-us/library/cc232006.aspx
 //MountPointReparseBuffer
+type   SymbolicLinkReparseBuffer struct {
+	/// Reparse point tag. Must be a Microsoft reparse point tag.
+	ReparseTag           uint32
+
+	/// Size, in bytes, of the data after the Reserved member. This can be calculated by:
+	/// (4 * sizeof(ushort)) + SubstituteNameLength + PrintNameLength +
+	/// (namesAreNullTerminated ? 2 * sizeof(char) : 0);
+	ReparseDataLength    uint16
+
+	/// Reserved; do not use.
+	Reserved             uint16
+
+	/// Offset, in bytes, of the substitute name string in the PathBuffer array.
+	SubstituteNameOffset uint16
+
+	/// Length, in bytes, of the substitute name string. If this string is null-terminated,
+	/// SubstituteNameLength does not include space for the null character.
+	SubstituteNameLength uint16
+
+	/// Offset, in bytes, of the print name string in the PathBuffer array.
+	PrintNameOffset      uint16
+
+	/// Length, in bytes, of the print name string. If this string is null-terminated,
+	/// PrintNameLength does not include space for the null character.
+	PrintNameLength      uint16
+
+	Flags                uint32
+	/// A buffer containing the unicode-encoded path string. The path string contains
+	/// the substitute name string and print name string.
+	//PathBuffer           [1]uint16
+	// SubstituteName - 264 widechars = 528 bytes
+	// PrintName      - 260 widechars = 520 bytes
+	//                                = 1048 bytes total
+	PathBuffer           [1048]uint16
+}
+
+func (r *SymbolicLinkReparseBuffer) PrintName() string {
+	offset := r.PrintNameOffset / 2//微软官方文档中说要除了2
+	length := r.PrintNameLength / 2
+	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
+}
+
+func (r *SymbolicLinkReparseBuffer) SubstituteName() string {
+	offset := r.SubstituteNameOffset / 2//微软官方文档中说要除了2
+	length := r.SubstituteNameLength / 2
+	//fmt.Println(string(utf16.Decode(r.PathBuffer[:])))
+	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
+}
+
+//junction point => IO_REPARSE_TAG_MOUNT_POINT (0xA0000003).
 type   MountPointReparseBuffer struct {
 	/// Reparse point tag. Must be a Microsoft reparse point tag.
 	ReparseTag           uint32
@@ -75,13 +127,23 @@ type   MountPointReparseBuffer struct {
 	/// A buffer containing the unicode-encoded path string. The path string contains
 	/// the substitute name string and print name string.
 	//PathBuffer           [1]uint16
-
 	// SubstituteName - 264 widechars = 528 bytes
 	// PrintName      - 260 widechars = 520 bytes
 	//                                = 1048 bytes total
 	PathBuffer           [1048]uint16
 }
 
+func (r *MountPointReparseBuffer) PrintName() string {
+	offset := r.PrintNameOffset / 2//微软官方文档中说要除了2
+	length := r.PrintNameLength / 2
+	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
+}
 
+func (r *MountPointReparseBuffer) SubstituteName() string {
+	offset := r.SubstituteNameOffset / 2//微软官方文档中说要除了2
+	length := r.SubstituteNameLength / 2
+	//fmt.Println(string(utf16.Decode(r.PathBuffer[:])))
+	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
+}
 
 

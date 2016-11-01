@@ -45,11 +45,9 @@ func main() {
 		}
 	}
 
-	//fmt.Println(junction.GetTarget("V:/TEMP - 目录连接点"));
-	fmt.Println(junction.GetTarget("V:/tt"));
-	//fmt.Println(junction.GetTarget("d:/Users/ZL/AppData/Roaming/Tencent/QQ/temp"));
+	//fmt.Println(junction.GetJunctionTarget("V:/tt"));
 	fmt.Println(junction.IsJunction("v:/tt"))
 	//fmt.Println(junction.Delete("v:/ttt"))
-	fmt.Println(junction.Create("v:/aaa", "v:/temp",true))
+	//fmt.Println(junction.Create("v:/aaa", "v:/temp",true))
 }
 
