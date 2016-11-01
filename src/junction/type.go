@@ -130,7 +130,7 @@ type   MountPointReparseBuffer struct {
 	// SubstituteName - 264 widechars = 528 bytes
 	// PrintName      - 260 widechars = 520 bytes
 	//                                = 1048 bytes total
-	PathBuffer           [1048]uint16
+	PathBuffer           [512]uint16
 }
 
 func (r *MountPointReparseBuffer) PrintName() string {

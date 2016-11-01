@@ -1,20 +1,18 @@
 package junction
 
-//https://msdn.microsoft.com/en-us/library/cc232006.aspx
+//https://msdn.microsoft.com/en-us/library/cc232007.aspx
 //https://gist.github.com/Perlmint/f9f0e37db163dd69317d
 //https://github.com/golang/go/blob/master/src/os/os_windows_test.go
 
 import (
 	"directory"
 	"os"
-	"fmt"
 	"syscall"
 	"path/filepath"
 	//"encoding/binary"
 
 	//"bytes"
 	"unsafe"
-	"unicode/utf16"
 	"strings"
 	"errors"
 )
@@ -51,33 +49,30 @@ func Create(junctionPoint string, targetDir string, overwrite bool) (result bool
 
 	substituteName := syscall.StringToUTF16(NonInterpretedPathPrefix + targetDir)
 
-	fmt.Println(len(substituteName))
-
 	printName := syscall.StringToUTF16(targetDir)
-
-	fmt.Println("1=" + string(utf16.Decode(substituteName)))
 
 	reparseDataBuffer := MountPointReparseBuffer{}
 
 	reparseDataBuffer.ReparseTag = IO_REPARSE_TAG_MOUNT_POINT
 
+
+	//加上8个字节的 SubstituteNameOffset,SubstituteNameLength,PrintNameOffset,PrintNameLength
 	//官方文档  Mount Point Reparse Data Buffer
 	//This value is the length of the data starting at the SubstituteNameOffset field (or the size of the PathBuffer field, in bytes, plus 8).
-	reparseDataBuffer.ReparseDataLength = uint16((len(substituteName) + len(printName)) * 2 + 12)
+	//https://msdn.microsoft.com/en-us/library/cc232007.aspx
+	reparseDataBuffer.ReparseDataLength = uint16((len(substituteName) + len(printName)) * 2 + 8)
 
 	reparseDataBuffer.Reserved = 0
 
 	reparseDataBuffer.SubstituteNameOffset = 0
 
 	//减1是去掉最后的 \0
-	reparseDataBuffer.SubstituteNameLength = uint16((len(substituteName) - 1) * 2)
+	reparseDataBuffer.SubstituteNameLength = uint16((len(substituteName)) * 2 - 2)
 
-	reparseDataBuffer.PrintNameOffset = uint16((len(substituteName) * 2))
+	reparseDataBuffer.PrintNameOffset = uint16(len(substituteName) * 2)
 
 	//减1是去掉最后的 \0
-	reparseDataBuffer.PrintNameLength = 0//uint16((len(printName) - 1) * 2)
-	//reparseDataBuffer.PathBuffer = targetDirBytes//targetDirBytes[0:len(targetDirBytes) - 1]//Array.Copy(targetDirBytes, reparseDataBuffer.PathBuffer, targetDirBytes.Length);
-	//copy(reparseDataBuffer.PathBuffer[:], substituteName);
+	reparseDataBuffer.PrintNameLength = uint16((len(printName)) * 2 - 2)
 
 	var i int
 	for i = 0; i < len(substituteName); i++ {
@@ -90,17 +85,12 @@ func Create(junctionPoint string, targetDir string, overwrite bool) (result bool
 		reparseDataBuffer.PathBuffer[i + j] = printName[j]
 	}
 
-	fmt.Println("2=" + reparseDataBuffer.SubstituteName())
-	fmt.Println("3=" + reparseDataBuffer.PrintName())
-
-	fmt.Println(string(utf16.Decode(reparseDataBuffer.PathBuffer[:])))
-
 	var bytesReturned uint32;
 
+	////第三个参数 inBufferSize = sizeof(REPARSE_DATA_BUFFER_HEADER)=8 的header
+	//即 4byte的ReparseTag+2byte的ReparseDataLength+2byte的Reserved
 	err = syscall.DeviceIoControl(handle, FSCTL_SET_REPARSE_POINT,
-		(*byte)(unsafe.Pointer(&reparseDataBuffer)), uint32(unsafe.Sizeof(reparseDataBuffer) + 20), nil, 0, &bytesReturned, nil);
-
-	//+ unsafe.Offsetof(reparseDataBuffer.SubstituteNameOffset)
+		(*byte)(unsafe.Pointer(&reparseDataBuffer)), uint32(reparseDataBuffer.ReparseDataLength + 8), nil, 0, &bytesReturned, nil);
 
 	if err != nil {
 		return false, err
@@ -172,7 +162,7 @@ func IsJunction(path string) bool {
 		return false
 	}
 
-	_, err = internalGetTarget(handle)
+	_, err = internalJunctionGetTarget(handle)
 	if err != nil {
 		return false
 	}
@@ -188,7 +178,7 @@ func GetJunctionTarget(junctionPoint string) (target string, err error) {
 	handle, err = openReparsePoint(junctionPoint, syscall.GENERIC_READ)
 
 	if err == nil {
-		target, err = internalGetTarget(handle);
+		target, err = internalJunctionGetTarget(handle);
 	}
 
 	defer syscall.CloseHandle(handle)
@@ -197,11 +187,11 @@ func GetJunctionTarget(junctionPoint string) (target string, err error) {
 
 }
 
-func internalGetTarget(handle syscall.Handle) (target string, err error) {
+func internalJunctionGetTarget(handle syscall.Handle) (target string, err error) {
 
 	var bytesReturned uint32;
 
-	var outBuffer SymbolicLinkReparseBuffer;
+	var outBuffer MountPointReparseBuffer;
 
 	//junction point => IO_REPARSE_TAG_MOUNT_POINT (0xA0000003).
 	//symbolink point => SYMBOLIC_LINK_FLAG_DIRECTORY  (0xA000000C)
@@ -209,6 +199,12 @@ func internalGetTarget(handle syscall.Handle) (target string, err error) {
 		nil, 0, (*byte)(unsafe.Pointer(&outBuffer)), uint32(unsafe.Sizeof(outBuffer)), &bytesReturned, nil);
 
 	if err == nil {
+		if outBuffer.ReparseTag != IO_REPARSE_TAG_MOUNT_POINT {
+			target = ""
+			err = errors.New("This Directory is not junction point.")
+			return
+		}
+
 		target = outBuffer.SubstituteName();
 		if (strings.HasPrefix(target, NonInterpretedPathPrefix)) {
 			target = target[len(NonInterpretedPathPrefix):]

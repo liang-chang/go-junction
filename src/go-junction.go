@@ -26,7 +26,7 @@ import (
 )
 
 func main() {
-
+	fmt.Println(os.Symlink("v:/temp","v:/aa"))
 	config := config.Parse();
 
 	fmt.Println(config.PathAlias)
@@ -43,11 +43,14 @@ func main() {
 		} else {
 			fmt.Println(v)
 		}
+
 	}
 
+	//fileInfo, err := os.Stat("v:/tt");
+
 	//fmt.Println(junction.GetJunctionTarget("V:/tt"));
-	fmt.Println(junction.IsJunction("v:/tt"))
+	//fmt.Println(junction.IsJunction("v:/tt"))
 	//fmt.Println(junction.Delete("v:/ttt"))
-	//fmt.Println(junction.Create("v:/aaa", "v:/temp",true))
+	fmt.Println(junction.Create("h:/aaa", "v:/temp",true))
 }
 

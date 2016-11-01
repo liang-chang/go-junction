@@ -5,10 +5,12 @@ import (
 	//"os/exec"
 	//"bytes"
 	//"fmt"
+	"fmt"
 )
 
 func DirectoryExist(path string) (bool, error) {
-	_, err := os.Stat(path)
+	fileInfo, err := os.Stat(path)
+	fmt.Println(fileInfo)
 	if err == nil {
 		return true, nil
 	}
