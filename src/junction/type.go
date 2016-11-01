@@ -37,13 +37,14 @@ const NonInterpretedPathPrefix = `\??\`;
 
 //https://msdn.microsoft.com/en-us/library/ff552012.aspx
 //_REPARSE_DATA_BUFFER header
-type _REPARSE_DATA_BUFFER struct {
+type REPARSE_DATA_BUFFER_HEADER struct {
 	ReparseTag        uint32
 	ReparseDataLength uint16
 	Reserved          uint16
 }
 
 //https://msdn.microsoft.com/en-us/library/ff552012.aspx
+//https://msdn.microsoft.com/en-us/library/cc232007.aspx
 //MountPointReparseBuffer
 type   MountPointReparseBuffer struct {
 	/// Reparse point tag. Must be a Microsoft reparse point tag.

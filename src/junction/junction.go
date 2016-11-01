@@ -40,7 +40,6 @@ func Create(junctionPoint string, targetDir string, overwrite bool) (result bool
 	if err != nil {
 		return false, err
 	}
-
 	var exist bool
 	if exist, err = directory.DirectoryExist(junctionPoint); err != nil {
 		return false, err
@@ -70,23 +69,34 @@ func Create(junctionPoint string, targetDir string, overwrite bool) (result bool
 	reparseDataBuffer := MountPointReparseBuffer{}
 
 	reparseDataBuffer.ReparseTag = IO_REPARSE_TAG_MOUNT_POINT
-	reparseDataBuffer.ReparseDataLength = 1048 * 2 + 12  //官方文档  the size of the PathBuffer field, in bytes, plus 12
+
+	//官方文档  Mount Point Reparse Data Buffer
+	//This value is the length of the data starting at the SubstituteNameOffset field (or the size of the PathBuffer field, in bytes, plus 8).
+	reparseDataBuffer.ReparseDataLength = uint16((len(substituteName) + len(printName)) * 2 + 8)
 
 	reparseDataBuffer.Reserved = 0
 
 	reparseDataBuffer.SubstituteNameOffset = 0
-	reparseDataBuffer.SubstituteNameLength = uint16(len(NonInterpretedPathPrefix + targetDir) * 2)
 
-	reparseDataBuffer.PrintNameOffset = uint16((len(NonInterpretedPathPrefix + targetDir)+1) * 2)
-	reparseDataBuffer.PrintNameLength = uint16(len(targetDir) * 2)
+	//减1是去掉最后的 \0
+	reparseDataBuffer.SubstituteNameLength = uint16((len(substituteName) - 1) * 2)
+
+	reparseDataBuffer.PrintNameOffset = uint16((len(substituteName) * 2))
+
+	//减1是去掉最后的 \0
+	reparseDataBuffer.PrintNameLength = uint16((len(printName) - 1) * 2)
 	//reparseDataBuffer.PathBuffer = targetDirBytes//targetDirBytes[0:len(targetDirBytes) - 1]//Array.Copy(targetDirBytes, reparseDataBuffer.PathBuffer, targetDirBytes.Length);
 	//copy(reparseDataBuffer.PathBuffer[:], substituteName);
 
-	for i := 0; i < len(substituteName); i++ {
+	var i int
+	for i = 0; i < len(substituteName); i++ {
 		reparseDataBuffer.PathBuffer[i] = substituteName[i]
 	}
-	for i := 0; i < len(printName); i++ {
-		reparseDataBuffer.PathBuffer[int(reparseDataBuffer.PrintNameOffset) / 2 + i] = printName[i]
+	var j, lenth int
+	j = 0
+	lenth = len(printName)
+	for i = len(substituteName); j < lenth; j++{
+		reparseDataBuffer.PathBuffer[i + j] = printName[j]
 	}
 
 	fmt.Println("2=" + reparseDataBuffer.SubstituteName())
@@ -97,7 +107,7 @@ func Create(junctionPoint string, targetDir string, overwrite bool) (result bool
 	var bytesReturned uint32;
 
 	err = syscall.DeviceIoControl(handle, FSCTL_SET_REPARSE_POINT,
-		(*byte)(unsafe.Pointer(&reparseDataBuffer)), uint32(unsafe.Sizeof(reparseDataBuffer) ), nil, 0, &bytesReturned, nil);
+		(*byte)(unsafe.Pointer(&reparseDataBuffer)), uint32(unsafe.Sizeof(reparseDataBuffer)), nil, 0, &bytesReturned, nil);
 
 	//+ unsafe.Offsetof(reparseDataBuffer.SubstituteNameOffset)
 
@@ -131,11 +141,11 @@ func Delete(junctionPoint string) (result bool, err error) {
 
 	reparseDataBuffer.ReparseTag = IO_REPARSE_TAG_MOUNT_POINT
 	reparseDataBuffer.ReparseDataLength = 0
-	reparseDataBuffer.Reserved=0
+	reparseDataBuffer.Reserved = 0
 
 	var bytesReturned uint32;
 
-	//第三个参数 inBufferSize 是 8 _REPARSE_DATA_BUFFER 的header
+	//第三个参数 inBufferSize = sizeof(REPARSE_DATA_BUFFER_HEADER)=8 的header
 	//见 https://msdn.microsoft.com/en-us/library/ff552012.aspx
 	//见 https://msdn.microsoft.com/en-us/library/cc232005.aspx
 	//见https://msdn.microsoft.com/en-us/library/cc232006.aspx
@@ -155,7 +165,7 @@ func Delete(junctionPoint string) (result bool, err error) {
 }
 
 /// Determines whether the specified path exists and refers to a junction point.
-func Exists(path string) bool {
+func IsJunction(path string) bool {
 	var exist bool
 	var err error
 	if exist, err = directory.DirectoryExist(path); err != nil || exist == false {
@@ -182,6 +192,7 @@ func Exists(path string) bool {
 /// Gets the target of the specified junction point.
 /// Only works on NTFS.
 func GetTarget(junctionPoint string) (target string, err error) {
+
 	var handle syscall.Handle
 	handle, err = openReparsePoint(junctionPoint, syscall.GENERIC_READ)
 
