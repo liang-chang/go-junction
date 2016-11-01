@@ -62,6 +62,8 @@ func Create(junctionPoint string, targetDir string, overwrite bool) (result bool
 
 	substituteName := syscall.StringToUTF16(NonInterpretedPathPrefix + targetDir)
 
+	fmt.Println(len(substituteName))
+
 	printName := syscall.StringToUTF16(targetDir)
 
 	fmt.Println("1=" + string(utf16.Decode(substituteName)))
@@ -72,7 +74,7 @@ func Create(junctionPoint string, targetDir string, overwrite bool) (result bool
 
 	//官方文档  Mount Point Reparse Data Buffer
 	//This value is the length of the data starting at the SubstituteNameOffset field (or the size of the PathBuffer field, in bytes, plus 8).
-	reparseDataBuffer.ReparseDataLength = uint16((len(substituteName) + len(printName)) * 2 + 8)
+	reparseDataBuffer.ReparseDataLength = uint16((len(substituteName) + len(printName)) * 2 + 12)
 
 	reparseDataBuffer.Reserved = 0
 
@@ -84,7 +86,7 @@ func Create(junctionPoint string, targetDir string, overwrite bool) (result bool
 	reparseDataBuffer.PrintNameOffset = uint16((len(substituteName) * 2))
 
 	//减1是去掉最后的 \0
-	reparseDataBuffer.PrintNameLength = uint16((len(printName) - 1) * 2)
+	reparseDataBuffer.PrintNameLength = 0//uint16((len(printName) - 1) * 2)
 	//reparseDataBuffer.PathBuffer = targetDirBytes//targetDirBytes[0:len(targetDirBytes) - 1]//Array.Copy(targetDirBytes, reparseDataBuffer.PathBuffer, targetDirBytes.Length);
 	//copy(reparseDataBuffer.PathBuffer[:], substituteName);
 
@@ -107,7 +109,7 @@ func Create(junctionPoint string, targetDir string, overwrite bool) (result bool
 	var bytesReturned uint32;
 
 	err = syscall.DeviceIoControl(handle, FSCTL_SET_REPARSE_POINT,
-		(*byte)(unsafe.Pointer(&reparseDataBuffer)), uint32(unsafe.Sizeof(reparseDataBuffer)), nil, 0, &bytesReturned, nil);
+		(*byte)(unsafe.Pointer(&reparseDataBuffer)), uint32(unsafe.Sizeof(reparseDataBuffer)+20), nil, 0, &bytesReturned, nil);
 
 	//+ unsafe.Offsetof(reparseDataBuffer.SubstituteNameOffset)
 
