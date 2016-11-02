@@ -18,7 +18,7 @@ const (
 	configParamName = "config"
 
 	//默认配置文件夹名
-	configFileDefaultName = "config.ini"
+	configFileDefaultName = "config.toml"
 
 	//提示语
 	configUsageText = "config file name"

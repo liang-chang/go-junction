@@ -3,7 +3,6 @@ package directory
 import (
 	"syscall"
 	//"fmt"
-	"errors"
 )
 
 /**
@@ -13,7 +12,7 @@ func DirectoryExist(path string) (bool, error) {
 	attrs, err := syscall.GetFileAttributes(syscall.StringToUTF16Ptr(path));
 	if err != nil {
 		if err == syscall.ERROR_FILE_NOT_FOUND {
-			return false, errors.New("file " + path + " is not exist !")
+			return false, nil
 		}
 		return false, err
 	}

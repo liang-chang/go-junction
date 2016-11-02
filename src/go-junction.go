@@ -7,10 +7,10 @@ import (
 	"fmt"
 	//"junction"
 	//"syscall"
+	"junction"
 )
 
 func main() {
-	fmt.Println(os.Symlink("v:/temp", "v:/aa"))
 	config := config.Parse();
 
 	fmt.Println(config.PathAlias)
@@ -27,17 +27,19 @@ func main() {
 		} else {
 			fmt.Println(v)
 		}
-
 	}
 
 	//fmt.Println(directory.DirectoryExist("v:/tt"))
 	//fmt.Println(directory.DirectoryExist("v:/xxxxx"))
-	fmt.Println(os.RemoveAll("v:/tt"))
-	fmt.Println(os.RemoveAll("v:/aa"))
+
+	//os.RemoveAll 可以删了作 符号链接和 junction point
+	//fmt.Println(os.RemoveAll("v:/tt"))
+	//fmt.Println(os.RemoveAll("v:/aa"))
+
 	//fmt.Println(directory.DirectoryExist("v:/xxxxx.txt"))
 	//fmt.Println(junction.GetJunctionTarget("V:/tt"));
 	//fmt.Println(junction.IsJunction("v:/tt"))
 	//fmt.Println(junction.Delete("v:/ttt"))
-	//fmt.Println(junction.CreateJunction("v:/tt", "v:/temp",true))
+	fmt.Println(junction.CreateJunction("v:/tt", "v:/TEMP",true))
 }
 
