@@ -3,30 +3,14 @@ package main
 import (
 	"directory"
 	"config"
-	//	"fmt"
-	//	"regexp"
-	//"log"
-	//	"os"
-	//	"os/exec"
-	//	"path/filepath"
-	//	"strings"
-	//	"bytes"
-	//	"strings"
-	//	"bytes"
-	//	"path/filepath"
-	//	"os"
-	//	"log"
-	//"io/ioutil"
-	//"fmt"
-
 	"os"
 	"fmt"
-	"junction"
+	//"junction"
 	//"syscall"
 )
 
 func main() {
-	fmt.Println(os.Symlink("v:/temp","v:/aa"))
+	fmt.Println(os.Symlink("v:/temp", "v:/aa"))
 	config := config.Parse();
 
 	fmt.Println(config.PathAlias)
@@ -46,11 +30,14 @@ func main() {
 
 	}
 
-	//fileInfo, err := os.Stat("v:/tt");
-
+	//fmt.Println(directory.DirectoryExist("v:/tt"))
+	//fmt.Println(directory.DirectoryExist("v:/xxxxx"))
+	fmt.Println(os.RemoveAll("v:/tt"))
+	fmt.Println(os.RemoveAll("v:/aa"))
+	//fmt.Println(directory.DirectoryExist("v:/xxxxx.txt"))
 	//fmt.Println(junction.GetJunctionTarget("V:/tt"));
 	//fmt.Println(junction.IsJunction("v:/tt"))
 	//fmt.Println(junction.Delete("v:/ttt"))
-	fmt.Println(junction.Create("h:/aaa", "v:/temp",true))
+	//fmt.Println(junction.CreateJunction("v:/tt", "v:/temp",true))
 }
 

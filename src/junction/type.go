@@ -2,6 +2,10 @@ package junction
 
 import "unicode/utf16"
 
+//Determining Whether a Directory Is a Mounted Folder
+//https://msdn.microsoft.com/en-us/library/aa363940.aspx
+
+
 //https://msdn.microsoft.com/en-us/library/cc232006.aspx
 //https://gist.github.com/Perlmint/f9f0e37db163dd69317d
 //https://github.com/golang/go/blob/master/src/os/os_windows_test.go

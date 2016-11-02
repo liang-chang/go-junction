@@ -1,23 +1,23 @@
 package directory
 
 import (
-	"os"
-	//"os/exec"
-	//"bytes"
+	"syscall"
 	//"fmt"
-	"fmt"
+	"errors"
 )
 
+/**
+调用 windows 底层函数，判断文件路径是否是个文件夹
+ */
 func DirectoryExist(path string) (bool, error) {
-	fileInfo, err := os.Stat(path)
-	fmt.Println(fileInfo)
-	if err == nil {
-		return true, nil
+	attrs, err := syscall.GetFileAttributes(syscall.StringToUTF16Ptr(path));
+	if err != nil {
+		if err == syscall.ERROR_FILE_NOT_FOUND {
+			return false, errors.New("file " + path + " is not exist !")
+		}
+		return false, err
 	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return true, err
+	return attrs & syscall.FILE_ATTRIBUTE_DIRECTORY > 0, nil
 }
 
 func cmdExec(cmdStr string, args ...string) {

@@ -22,7 +22,7 @@ import (
 
 /// Creates a junction point from the specified directory to the specified target directory.
 /// Only works on NTFS.
-func Create(junctionPoint string, targetDir string, overwrite bool) (result bool, err error) {
+func CreateJunction(junctionPoint string, targetDir string, overwrite bool) (result bool, err error) {
 	targetDir, err = filepath.Abs(targetDir)
 	if err != nil {
 		return false, err
@@ -102,7 +102,7 @@ func Create(junctionPoint string, targetDir string, overwrite bool) (result bool
 /// Deletes a junction point at the specified source directory along with the directory itself.
 /// Does nothing if the junction point does not exist.
 /// Only works on NTFS.
-func Delete(junctionPoint string) (result bool, err error) {
+func DeleteJunction(junctionPoint string) (result bool, err error) {
 	var exist bool
 	if exist, err = directory.DirectoryExist(junctionPoint); err != nil || exist == false {
 		return false, errors.New("directory can not open or not exist.");
