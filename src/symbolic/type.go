@@ -1,10 +1,9 @@
-package junction
+package symbolic
 
 import "unicode/utf16"
 
 //Determining Whether a Directory Is a Mounted Folder
 //https://msdn.microsoft.com/en-us/library/aa363940.aspx
-
 
 //https://msdn.microsoft.com/en-us/library/cc232006.aspx
 //https://gist.github.com/Perlmint/f9f0e37db163dd69317d
@@ -44,8 +43,15 @@ const NonInterpretedPathPrefix = `\??\`;
 //https://msdn.microsoft.com/en-us/library/ff552012.aspx
 //_REPARSE_DATA_BUFFER header
 type REPARSE_DATA_BUFFER_HEADER struct {
+	/// Reparse point tag. Must be a Microsoft reparse point tag.
 	ReparseTag        uint32
+
+	/// Size, in bytes, of the data after the Reserved member. This can be calculated by:
+	/// (4 * sizeof(ushort)) + SubstituteNameLength + PrintNameLength +
+	/// (namesAreNullTerminated ? 2 * sizeof(char) : 0);
 	ReparseDataLength uint16
+
+	/// Reserved; do not use.
 	Reserved          uint16
 }
 
@@ -53,16 +59,7 @@ type REPARSE_DATA_BUFFER_HEADER struct {
 //https://msdn.microsoft.com/en-us/library/cc232006.aspx
 //MountPointReparseBuffer
 type   SymbolicLinkReparseBuffer struct {
-	/// Reparse point tag. Must be a Microsoft reparse point tag.
-	ReparseTag           uint32
-
-	/// Size, in bytes, of the data after the Reserved member. This can be calculated by:
-	/// (4 * sizeof(ushort)) + SubstituteNameLength + PrintNameLength +
-	/// (namesAreNullTerminated ? 2 * sizeof(char) : 0);
-	ReparseDataLength    uint16
-
-	/// Reserved; do not use.
-	Reserved             uint16
+	header               REPARSE_DATA_BUFFER_HEADER
 
 	/// Offset, in bytes, of the substitute name string in the PathBuffer array.
 	SubstituteNameOffset uint16
@@ -78,7 +75,7 @@ type   SymbolicLinkReparseBuffer struct {
 	/// PrintNameLength does not include space for the null character.
 	PrintNameLength      uint16
 
-	Flags                uint32
+	//Flags                uint32
 	/// A buffer containing the unicode-encoded path string. The path string contains
 	/// the substitute name string and print name string.
 	//PathBuffer           [1]uint16
@@ -103,16 +100,7 @@ func (r *SymbolicLinkReparseBuffer) SubstituteName() string {
 
 //junction point => IO_REPARSE_TAG_MOUNT_POINT (0xA0000003).
 type   MountPointReparseBuffer struct {
-	/// Reparse point tag. Must be a Microsoft reparse point tag.
-	ReparseTag           uint32
-
-	/// Size, in bytes, of the data after the Reserved member. This can be calculated by:
-	/// (4 * sizeof(ushort)) + SubstituteNameLength + PrintNameLength +
-	/// (namesAreNullTerminated ? 2 * sizeof(char) : 0);
-	ReparseDataLength    uint16
-
-	/// Reserved; do not use.
-	Reserved             uint16
+	header               REPARSE_DATA_BUFFER_HEADER
 
 	/// Offset, in bytes, of the substitute name string in the PathBuffer array.
 	SubstituteNameOffset uint16
@@ -134,7 +122,7 @@ type   MountPointReparseBuffer struct {
 	// SubstituteName - 264 widechars = 528 bytes
 	// PrintName      - 260 widechars = 520 bytes
 	//                                = 1048 bytes total
-	PathBuffer           [512]uint16
+	PathBuffer           [1048]uint16
 }
 
 func (r *MountPointReparseBuffer) PrintName() string {

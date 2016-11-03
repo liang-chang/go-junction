@@ -1,4 +1,4 @@
-package directory
+package util
 
 import (
 	"fmt"

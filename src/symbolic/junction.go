@@ -1,20 +1,20 @@
-package junction
+package symbolic
 
 //https://msdn.microsoft.com/en-us/library/cc232007.aspx
 //https://gist.github.com/Perlmint/f9f0e37db163dd69317d
 //https://github.com/golang/go/blob/master/src/os/os_windows_test.go
 
 import (
-	"directory"
+//	"util"
 	"os"
 	"syscall"
 	"path/filepath"
 	//"encoding/binary"
-
 	//"bytes"
 	"unsafe"
-	"strings"
 	"errors"
+	"util"
+	"bytes"
 )
 
 
@@ -28,7 +28,7 @@ func CreateJunction(junctionPoint string, targetDir string, overwrite bool) (res
 		return false, err
 	}
 	var exist bool
-	if exist, err = directory.DirectoryExist(junctionPoint); err != nil {
+	if exist, err = util.DirectoryExist(junctionPoint); err != nil {
 		return false, err
 	}
 
@@ -53,16 +53,16 @@ func CreateJunction(junctionPoint string, targetDir string, overwrite bool) (res
 
 	reparseDataBuffer := MountPointReparseBuffer{}
 
-	reparseDataBuffer.ReparseTag = IO_REPARSE_TAG_MOUNT_POINT
+	reparseDataBuffer.header.ReparseTag = IO_REPARSE_TAG_MOUNT_POINT
 
 
 	//加上8个字节的 SubstituteNameOffset,SubstituteNameLength,PrintNameOffset,PrintNameLength
 	//官方文档  Mount Point Reparse Data Buffer
 	//This value is the length of the data starting at the SubstituteNameOffset field (or the size of the PathBuffer field, in bytes, plus 8).
 	//https://msdn.microsoft.com/en-us/library/cc232007.aspx
-	reparseDataBuffer.ReparseDataLength = uint16((len(substituteName) + len(printName)) * 2 + 8)
+	reparseDataBuffer.header.ReparseDataLength = uint16((len(substituteName) + len(printName)) * 2 + 8)
 
-	reparseDataBuffer.Reserved = 0
+	reparseDataBuffer.header.Reserved = 0
 
 	reparseDataBuffer.SubstituteNameOffset = 0
 
@@ -90,7 +90,7 @@ func CreateJunction(junctionPoint string, targetDir string, overwrite bool) (res
 	////第三个参数 inBufferSize = sizeof(REPARSE_DATA_BUFFER_HEADER)=8 的header
 	//即 4byte的ReparseTag+2byte的ReparseDataLength+2byte的Reserved
 	err = syscall.DeviceIoControl(handle, FSCTL_SET_REPARSE_POINT,
-		(*byte)(unsafe.Pointer(&reparseDataBuffer)), uint32(reparseDataBuffer.ReparseDataLength + 8), nil, 0, &bytesReturned, nil);
+		(*byte)(unsafe.Pointer(&reparseDataBuffer)), uint32(reparseDataBuffer.header.ReparseDataLength + 8), nil, 0, &bytesReturned, nil);
 
 	if err != nil {
 		return false, err
@@ -104,7 +104,7 @@ func CreateJunction(junctionPoint string, targetDir string, overwrite bool) (res
 /// Only works on NTFS.
 func DeleteJunction(junctionPoint string) (result bool, err error) {
 	var exist bool
-	if exist, err = directory.DirectoryExist(junctionPoint); err != nil || exist == false {
+	if exist, err = util.DirectoryExist(junctionPoint); err != nil || exist == false {
 		return false, errors.New("directory can not open or not exist.");
 	}
 
@@ -118,7 +118,8 @@ func DeleteJunction(junctionPoint string) (result bool, err error) {
 		return false, err;
 	}
 
-	reparseDataBuffer := MountPointReparseBuffer{}
+	//reparseDataBuffer := MountPointReparseBuffer{}
+	reparseDataBuffer := REPARSE_DATA_BUFFER_HEADER{}
 
 	reparseDataBuffer.ReparseTag = IO_REPARSE_TAG_MOUNT_POINT
 	reparseDataBuffer.ReparseDataLength = 0
@@ -127,12 +128,15 @@ func DeleteJunction(junctionPoint string) (result bool, err error) {
 	var bytesReturned uint32;
 
 	//第三个参数 inBufferSize = sizeof(REPARSE_DATA_BUFFER_HEADER)=8 的header
+	//https://msdn.microsoft.com/en-us/library/windows/desktop/aa364560(v=vs.85).aspx
+	//nInBufferSize:The size of the lpInBuffer buffer, in bytes. This value must be the size indicated by REPARSE_GUID_DATA_BUFFER_HEADER_SIZE.
+
 	//见 https://msdn.microsoft.com/en-us/library/ff552012.aspx
 	//见 https://msdn.microsoft.com/en-us/library/cc232005.aspx
-	//见https://msdn.microsoft.com/en-us/library/cc232006.aspx
+	//见 https://msdn.microsoft.com/en-us/library/cc232006.aspx
 	//见根目录下  NTFS Hard Links, Directory Junctions, and Windows Shortcuts.mhtml
 	err = syscall.DeviceIoControl(handle, FSCTL_DELETE_REPARSE_POINT,
-		(*byte)(unsafe.Pointer(&reparseDataBuffer)), 8, nil, 0, &bytesReturned, nil);
+		(*byte)(unsafe.Pointer(&reparseDataBuffer)), uint32(unsafe.Sizeof(reparseDataBuffer)), nil, 0, &bytesReturned, nil);
 
 	if err != nil {
 		return false, err;
@@ -149,7 +153,7 @@ func DeleteJunction(junctionPoint string) (result bool, err error) {
 func IsJunction(path string) bool {
 	var exist bool
 	var err error
-	if exist, err = directory.DirectoryExist(path); err != nil || exist == false {
+	if exist, err = util.DirectoryExist(path); err != nil || exist == false {
 		return false
 	}
 	var handle syscall.Handle
@@ -186,45 +190,4 @@ func GetJunctionTarget(junctionPoint string) (target string, err error) {
 	return
 
 }
-
-func internalJunctionGetTarget(handle syscall.Handle) (target string, err error) {
-
-	var bytesReturned uint32;
-
-	var outBuffer MountPointReparseBuffer;
-
-	//junction point => IO_REPARSE_TAG_MOUNT_POINT (0xA0000003).
-	//symbolink point => SYMBOLIC_LINK_FLAG_DIRECTORY  (0xA000000C)
-	err = syscall.DeviceIoControl(handle, syscall.FSCTL_GET_REPARSE_POINT,
-		nil, 0, (*byte)(unsafe.Pointer(&outBuffer)), uint32(unsafe.Sizeof(outBuffer)), &bytesReturned, nil);
-
-	if err == nil {
-		if outBuffer.ReparseTag != IO_REPARSE_TAG_MOUNT_POINT {
-			target = ""
-			err = errors.New("This Directory is not junction point.")
-			return
-		}
-
-		target = outBuffer.SubstituteName();
-		if (strings.HasPrefix(target, NonInterpretedPathPrefix)) {
-			target = target[len(NonInterpretedPathPrefix):]
-		}
-	} else {
-		target = ""
-	}
-	return
-}
-
-func openReparsePoint(reparsePoint string, accessMode uint32) (handle syscall.Handle, err error) {
-	handle, err = syscall.CreateFile(
-		syscall.StringToUTF16Ptr(reparsePoint),
-		accessMode,
-		syscall.FILE_SHARE_READ | syscall.FILE_SHARE_WRITE | syscall.FILE_SHARE_DELETE,
-		nil,
-		syscall.OPEN_EXISTING,
-		syscall.FILE_FLAG_BACKUP_SEMANTICS | syscall.FILE_FLAG_OPEN_REPARSE_POINT,
-		0)
-	return
-}
-
 

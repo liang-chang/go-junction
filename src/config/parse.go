@@ -10,7 +10,7 @@ import (
 const (
 	actionParamName = "action"
 
-	actionDefault = "check"
+	actionDefault = "list" //list create recovery
 
 	actoinUsageText = "action can only one of those: check create update"
 

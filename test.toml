@@ -1,4 +1,4 @@
-[targetConfig]
+[linkConfig]
 # 原始文件夹重命名备份
 renameTargetFolder = false
 
@@ -16,14 +16,16 @@ useless='C:\useless'
 chrome_cache='V:\chrome_cache'
 firefox_cache='V:\firefox_cache'
 
-[[junction]]
+[[symbolic]]
+type="junction"
+action=""
 target = '{useless}/A'
 link = [
 'd:/|\d+$|/bin',
 'v:/|cache$|'
 ]
 
-[[junction]]
+[[symbolic]]
 target = '{useless}/B'
 link = [
 'd:/|\d+$|/bin',

@@ -1,4 +1,4 @@
-package main
+package action
 
 import (
 	"util"
@@ -8,10 +8,9 @@ import (
 	//"junction"
 	//"syscall"
 	"symbolic"
-	//"unsafe"
 )
 
-func main() {
+func list() {
 	config := config.Parse();
 
 	fmt.Println(config.PathAlias)
@@ -40,13 +39,7 @@ func main() {
 	//fmt.Println(directory.DirectoryExist("v:/xxxxx.txt"))
 	//fmt.Println(junction.GetJunctionTarget("V:/tt"));
 	//fmt.Println(junction.IsJunction("v:/tt"))
-	fmt.Println(symbolic.DeleteJunction("v:/tt"))
-	//fmt.Println(symbolic.CreateJunction("v:/tt", "v:/TEMP",true))
-
-	//var mountPoint symbolic.MountPointReparseBuffer
-	//var symbolicLink symbolic.SymbolicLinkReparseBuffer
-	//
-	//fmt.Println(unsafe.Sizeof(mountPoint))
-	//fmt.Println(unsafe.Sizeof(symbolicLink))
+	//fmt.Println(junction.Delete("v:/ttt"))
+	fmt.Println(symbolic.CreateJunction("v:/tt", "v:/TEMP",true))
 }
 
