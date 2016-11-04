@@ -1,13 +1,14 @@
 package main
 
 import (
-	"util"
+	//"util"
 	"config"
 	"os"
 	"fmt"
 	//"junction"
 	//"syscall"
 	"symbolic"
+	"action"
 	//"unsafe"
 )
 
@@ -17,7 +18,7 @@ func main() {
 	fmt.Println(config.PathAlias)
 	fmt.Println(config.Junction)
 
-	ret := util.GetPatternDir(`d:/|\d+$|/bin`)
+	ret := action.GetPatternDirectory(`d:/|\d+$|/binn`)
 	for _, v := range ret {
 		_, err := os.Stat(v)
 		if err != nil {
