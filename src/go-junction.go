@@ -7,18 +7,24 @@ import (
 	"fmt"
 	//"junction"
 	//"syscall"
-	"symbolic"
-	"action"
+	//"action"
+	//"util"
 	//"unsafe"
 )
 
 func main() {
-	config := config.Parse();
 
-	fmt.Println(config.PathAlias)
-	fmt.Println(config.Junction)
 
-	ret := action.GetPatternDirectory(`d:/|\d+$|/binn`)
+	configs := config.Init();
+
+	fmt.Println(configs.PathAlias)
+	fmt.Println(configs.Symbolic)
+	symbolics := configs.Symbolic
+
+	fmt.Println(symbolics)
+
+	ret := config.GetPatternDirectory(`E:/|workspace|/binn`)
+	//ret := action.GetPatternDirectory(`E:/|\d+$|/binn`)
 	for _, v := range ret {
 		_, err := os.Stat(v)
 		if err != nil {
@@ -41,7 +47,7 @@ func main() {
 	//fmt.Println(directory.DirectoryExist("v:/xxxxx.txt"))
 	//fmt.Println(junction.GetJunctionTarget("V:/tt"));
 	//fmt.Println(junction.IsJunction("v:/tt"))
-	fmt.Println(symbolic.DeleteJunction("v:/tt"))
+	//fmt.Println(symbolic.DeleteJunction("v:/tt"))
 	//fmt.Println(symbolic.CreateJunction("v:/tt", "v:/TEMP",true))
 
 	//var mountPoint symbolic.MountPointReparseBuffer
