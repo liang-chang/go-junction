@@ -7,6 +7,8 @@ var Actions = [...]string{"list", "check", "make", "recovery"}
 //Symbolic.Action 可用
 var SymbolicActions = [...]string{"make", "ignore", "recovery"}
 
+const FILE_SPLIT = "/"
+
 type Setting struct {
 	//list check create recovery
 	Action    string

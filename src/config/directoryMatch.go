@@ -8,9 +8,9 @@ import (
 	"os"
 )
 
-func GetPatternDirectory(pathPattern string, linkConfg LinkConfig) []string {
+func GetMatchDirectory(pathPattern string, linkConfg LinkConfig) []string {
 
-	diskReg := regexp.MustCompile(`(?i)[a-z]:(\\|/)`)
+	diskReg := regexp.MustCompile(`(?i)[a-z]:`)//`(?i)[a-z]:(\\|/)`
 
 	matchRet := diskReg.FindStringSubmatch(pathPattern)
 
@@ -21,7 +21,7 @@ func GetPatternDirectory(pathPattern string, linkConfg LinkConfig) []string {
 
 	var diskName string = matchRet[0]
 
-	dirReg := regexp.MustCompile(`(\\|/)((?:\|[^|]+\|)|[^/\\]+)`)
+	dirReg := regexp.MustCompile(`(?:\\|/)((?:\|[^|]+\|)|[^/\\]+)`)//`(\\|/)((?:\|[^|]+\|)|[^/\\]+)`
 
 	pathPattern = strings.Trim(pathPattern, " ")
 
@@ -35,30 +35,27 @@ func GetPatternDirectory(pathPattern string, linkConfg LinkConfig) []string {
 		return make([]string, 0, 0)
 	}
 
-	matchedDirs = append(matchedDirs, diskName)
+	matchedDirs = append(matchedDirs, diskName + FILE_SPLIT)
 
 	dirPartsLen := len(dirParts)
 
-	for _, v := range dirParts {
+	for index, v := range dirParts {
 
-		fileSplit := v[1]
-
-		namePattern := v[2]
+		namePattern := v[1]
 
 		isLast := index + 1 == dirPartsLen
 
 		//普通路径字串
 		//最后一个路径可以不存在
 		if !(strings.HasPrefix(namePattern, "|") && strings.HasSuffix(namePattern, "|")) {
-			matchedDirs = appendDir(matchedDirs, fileSplit, namePattern, isLast)
+			matchedDirs = appendDir(matchedDirs, namePattern, linkConfg, isLast)
 			continue
 		}
-
 
 		//包含正则的路径字串
 		namePattern = strings.Trim(namePattern, "|")
 		//最后一路径是正则的必须要存在
-		matchedDirs = appendPatternDir(matchedDirs, fileSplit, namePattern, isLast)
+		matchedDirs = appendPatternDir(matchedDirs, namePattern, linkConfg, isLast)
 	}
 	return matchedDirs
 }
@@ -66,7 +63,7 @@ func GetPatternDirectory(pathPattern string, linkConfg LinkConfig) []string {
 /**
 dirs 中添加 appendDir
 */
-func appendPatternDir(parsedDirs []string, fileSplit string, namePattern string, isLast bool) []string {
+func appendPatternDir(parsedDirs []string, namePattern string, linkConfg, isLast bool) []string {
 
 	nameReg := regexp.MustCompile(namePattern)
 
@@ -74,7 +71,7 @@ func appendPatternDir(parsedDirs []string, fileSplit string, namePattern string,
 		return d.IsDir()&&nameReg.MatchString(d.Name())
 	}
 
-	retDirs := traversalDir(parsedDirs, fileSplit, namePattern, match, isLast);
+	retDirs := traversalDir(parsedDirs, namePattern, match, linkConfg);
 
 	return retDirs
 }
@@ -82,45 +79,48 @@ func appendPatternDir(parsedDirs []string, fileSplit string, namePattern string,
 /**
 dirs 中添加 appendDir
 */
-func appendDir(parsedDirs []string, fileSplit string, appendDir string, isLast bool) []string {
-	match := func(d os.FileInfo) bool {
+func appendDir(parsedDirs []string, appendDir string, linkConfg LinkConfig, isLast bool) []string {
+	if linkConfg.ForeceCreate {
+		var ret []string = make([]string, 0, 16)
+		for _, v := range parsedDirs {
+			//fix：出现 e://temp 这种路径情况
+			v = trimFileSplit(v)
 
+
+		}
+	}
+
+	match := func(d os.FileInfo) bool {
 		return d.IsDir()&&d.Name() == appendDir
 	}
 
-	retDirs := traversalDir(parsedDirs, fileSplit, appendDir, match, isLast);
+	retDirs := traversalDir(parsedDirs, appendDir, match, linkConfg);
 	return retDirs
 }
 
 type dirMatch func(os.FileInfo) bool
 
-func traversalDir(parsedDirs []string, fileSplit string, appendDir string, match dirMatch, isLast bool) []string {
+func traversalDir(parsedDirs []string, appendDir string, match dirMatch, linkConfg LinkConfig) []string {
 	var retDirs []string = make([]string, 0, 16)
 	for _, v := range parsedDirs {
-
-		if isLast {
-			//fix：出现 e://temp 这种路径情况
-			if strings.HasSuffix(v, fileSplit) {
-				v = strings.TrimRight(v, fileSplit)
-			}
-			retDirs = append(retDirs, v + fileSplit + appendDir)
-			continue
-		}
 
 		childDirs, _ := ioutil.ReadDir(v)
 
 		//fix：出现 e://temp 这种路径情况
-		if strings.HasSuffix(v, fileSplit) {
-			v = strings.TrimRight(v, fileSplit)
-		}
+		v = trimFileSplit(v)
 
 		for _, d := range childDirs {
-
 			if match(d) {
-
-				retDirs = append(retDirs, v + fileSplit + d.Name())
+				retDirs = append(retDirs, v + FILE_SPLIT + d.Name())
 			}
 		}
 	}
 	return retDirs
+}
+
+func trimFileSplit(str string) string {
+	if strings.HasSuffix(str, FILE_SPLIT) {
+		return strings.TrimRight(str, FILE_SPLIT)
+	}
+	return str
 }

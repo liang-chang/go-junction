@@ -39,7 +39,7 @@ func Init() Setting {
 		}
 
 	}
-	return Setting{}
+	return conf
 }
 
 func readLinkText(linkText string) LinkConfig {
@@ -51,7 +51,6 @@ func readLinkText(linkText string) LinkConfig {
 
 	ret := LinkConfig{}
 
-
 	//解析形如： bclf@d:/|\d+$|/bin
 	//前面的 bclf
 	if len(split) > 1 {
@@ -60,7 +59,7 @@ func readLinkText(linkText string) LinkConfig {
 		split = split[1:]
 	}
 
-	return LinkConfig{}
+	return ret
 }
 
 func setLinkCmd(cmd string, linkConfg LinkConfig) {
