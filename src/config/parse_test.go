@@ -2,13 +2,13 @@ package config
 
 import (
 	"testing"
-	"strings"
 	"fmt"
 )
 
 func TestReadLinkText(t *testing.T) {
-	split := strings.Split(`bclf@d:/|\d+$|/bin`, "@")
-	fmt.Println(split[:])
-	fmt.Println(split[1:])
+	var conf Symbolic
+	linkConfig := make([]LinkConfig, 0, 5);
+	linkConfig = append(linkConfig, LinkConfig{})
+	fmt.Println(conf)
 	//readLinkText(`bclf@d:/|\d+$|/bin`)
 }

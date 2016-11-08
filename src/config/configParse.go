@@ -10,7 +10,6 @@ import (
 	"syscall"
 	"strings"
 	"fmt"
-	"unsafe"
 )
 
 const (
@@ -32,15 +31,17 @@ const (
 
 func Init() Setting {
 	conf := readConfig()
+	var linkConfigs []LinkConfig
 	for _, symb := range conf.Symbolic {
-		linkConfigs := make([]LinkConfig, 0, len(symb.Link) * 3)
+		linkConfigs = make([]LinkConfig, 0, len(symb.Link) * 3)
 
 		for _, linkText := range symb.Link {
 			linkConfigs = append(linkConfigs, readLinkText(linkText))
 		}
-		symb.LinkConfig = linkConfigs
+		symb.LinkConfig = &linkConfigs
 	}
 	fmt.Println("-----------------")
+	fmt.Println(linkConfigs)
 	fmt.Println(conf.Symbolic)
 	return conf
 }
