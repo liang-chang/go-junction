@@ -38,7 +38,7 @@ type Symbolic struct {
 	Target     string
 	Link       []string
 
-	LinkConfig *[]LinkConfig
+	LinkConfig []LinkConfig
 }
 
 //

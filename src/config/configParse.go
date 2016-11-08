@@ -38,11 +38,13 @@ func Init() Setting {
 		for _, linkText := range symb.Link {
 			linkConfigs = append(linkConfigs, readLinkText(linkText))
 		}
-		symb.LinkConfig = &linkConfigs
+		symb.LinkConfig = linkConfigs
 	}
-	fmt.Println("-----------------")
+	fmt.Println("1-----------------")
 	fmt.Println(linkConfigs)
-	fmt.Println(conf.Symbolic)
+	for _, v := range conf.Symbolic {
+		fmt.Println(v.LinkConfig)
+	}
 	return conf
 }
 
