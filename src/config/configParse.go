@@ -9,6 +9,8 @@ import (
 	"util"
 	"syscall"
 	"strings"
+	"fmt"
+	"unsafe"
 )
 
 const (
@@ -30,15 +32,16 @@ const (
 
 func Init() Setting {
 	conf := readConfig()
-
 	for _, symb := range conf.Symbolic {
-		symb.LinkConfig = make([]LinkConfig, len(symb.Link) * 3)
+		linkConfigs := make([]LinkConfig, 0, len(symb.Link) * 3)
 
 		for _, linkText := range symb.Link {
-			readLinkText(linkText)
+			linkConfigs = append(linkConfigs, readLinkText(linkText))
 		}
-
+		symb.LinkConfig = linkConfigs
 	}
+	fmt.Println("-----------------")
+	fmt.Println(conf.Symbolic)
 	return conf
 }
 
@@ -55,14 +58,16 @@ func readLinkText(linkText string) LinkConfig {
 	//前面的 bclf
 	if len(split) > 1 {
 		cmd := split[0]
-		setLinkCmd(cmd, ret)
+		setLinkCmd(cmd, &ret)
 		split = split[1:]
 	}
+
+	ret.FolderPattern = split[0]
 
 	return ret
 }
 
-func setLinkCmd(cmd string, linkConfg LinkConfig) {
+func setLinkCmd(cmd string, linkConfg *LinkConfig) {
 	if strings.Contains(cmd, "b") {
 		linkConfg.Backup = true
 		if strings.Contains(cmd, "c") {

@@ -19,13 +19,21 @@ func main() {
 
 	fmt.Println(configs.PathAlias)
 	//fmt.Println(configs.Symbolic)
-	//symbolics := configs.Symbolic
+	symbolics := configs.Symbolic
 
-	//fmt.Println(symbolics)
+	fmt.Println("-----------------")
+	fmt.Println(configs.Symbolic)
+
+	for _, v := range symbolics {
+		fmt.Println(v)
+		fmt.Println(v.LinkConfig)
+	}
+
+	fmt.Println(symbolics)
 
 	linkConfig := config.LinkConfig{};
 
-	ret := config.GetMatchDirectory(`E:/|workspace|/.metadata`, linkConfig)
+	ret := config.GetMatchDirectory(`E:/|workspace|/.metadataT`, linkConfig)
 	//ret := action.GetPatternDirectory(`E:/|\d+$|/binn`)
 	for _, v := range ret {
 		_, err := os.Stat(v)

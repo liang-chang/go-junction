@@ -63,7 +63,7 @@ func GetMatchDirectory(pathPattern string, linkConfg LinkConfig) []string {
 /**
 dirs 中添加 appendDir
 */
-func appendPatternDir(parsedDirs []string, namePattern string, linkConfg, isLast bool) []string {
+func appendPatternDir(parsedDirs []string, namePattern string, linkConfg LinkConfig, isLast bool) []string {
 
 	nameReg := regexp.MustCompile(namePattern)
 
@@ -80,14 +80,14 @@ func appendPatternDir(parsedDirs []string, namePattern string, linkConfg, isLast
 dirs 中添加 appendDir
 */
 func appendDir(parsedDirs []string, appendDir string, linkConfg LinkConfig, isLast bool) []string {
-	if linkConfg.ForeceCreate {
+	if linkConfg.ForeceCreate || (linkConfg.LastDirAppender&&isLast) {
 		var ret []string = make([]string, 0, 16)
 		for _, v := range parsedDirs {
 			//fix：出现 e://temp 这种路径情况
 			v = trimFileSplit(v)
-
-
+			ret = append(ret, v + FILE_SPLIT + appendDir)
 		}
+		return ret
 	}
 
 	match := func(d os.FileInfo) bool {
