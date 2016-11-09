@@ -1,16 +1,13 @@
 package action
 
 import (
-	//"util"
-	//"config"
-	//"os"
-	//"fmt"
-	////"junction"
-	////"syscall"
-	//"symbolic"
+	"fmt"
+	"config"
 )
 
-func list() {
-
+func list(conf config.Setting) {
+	for _, v := range conf.Symbolic {
+		fmt.Println(v.LinkConfig)
+	}
 }
 

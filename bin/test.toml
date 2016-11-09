@@ -12,13 +12,13 @@ createTargetFolder = false
 #build in path variable
 # UserHome
 # Temp
-useless='C:\useless'
-chrome_cache='V:\chrome_cache'
-firefox_cache='V:\firefox_cache'
+useless='C:/useless'
+chrome_cache='V:/chrome_cache'
+firefox_cache='V:/firefox_cache'
 
 [[symbolic]]
 action="ignore"
-target = '{useless}/A'
+target = '{useless}/AAA'
 link = [
 'bclf@d:/|\d+$|/bin',
 'v:/|cache$|'
@@ -29,5 +29,5 @@ action="recovery"
 target = '{useless}/B'
 link = [
 'd:/|\d+$|/bin',
-'v:/|chrome$|'
+'{chrome_cache}/|chrome$|'
 ]

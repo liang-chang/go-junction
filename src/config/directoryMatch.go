@@ -8,7 +8,16 @@ import (
 	"os"
 )
 
-func GetMatchDirectory(pathPattern string, linkConfg LinkConfig) []string {
+func MatchDirectory(conf Setting) {
+	for i, symb := range conf.Symbolic {
+		for j, linkConf := range symb.LinkConfig {
+			matchedDir := getMatchDirectory(linkConf.FolderPattern, linkConf)
+			conf.Symbolic[i].LinkConfig[j].MatchFolder = append(conf.Symbolic[i].LinkConfig[j].MatchFolder, matchedDir...)
+		}
+	}
+}
+
+func getMatchDirectory(pathPattern string, linkConfg LinkConfig) []string {
 
 	diskReg := regexp.MustCompile(`(?i)[a-z]:`)//`(?i)[a-z]:(\\|/)`
 

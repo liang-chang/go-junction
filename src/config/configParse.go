@@ -9,7 +9,9 @@ import (
 	"util"
 	"syscall"
 	"strings"
-	"fmt"
+	"os/user"
+	"regexp"
+	//"fmt"
 )
 
 const (
@@ -29,26 +31,44 @@ const (
 	configUsageText = "config file name"
 )
 
-func Init() Setting {
+/*
+     读取配置文件，并进行配置的解读；进行 path alias 的替换
+ */
+func Read() Setting {
 	conf := readConfig()
-	var linkConfigs []LinkConfig
-	for _, symb := range conf.Symbolic {
-		linkConfigs = make([]LinkConfig, 0, len(symb.Link) * 3)
-
+	setBuildInPathAlias(conf)
+	for i, symb := range conf.Symbolic {
 		for _, linkText := range symb.Link {
-			linkConfigs = append(linkConfigs, readLinkText(linkText))
+			conf.Symbolic[i].LinkConfig = append(conf.Symbolic[i].LinkConfig, readLinkText(linkText, conf.PathAlias))
 		}
-		symb.LinkConfig = linkConfigs
-	}
-	fmt.Println("1-----------------")
-	fmt.Println(linkConfigs)
-	for _, v := range conf.Symbolic {
-		fmt.Println(v.LinkConfig)
+		conf.Symbolic[i].Target = resolvePathAlias(conf.Symbolic[i].Target, conf.PathAlias)
 	}
 	return conf
 }
 
-func readLinkText(linkText string) LinkConfig {
+func setBuildInPathAlias(conf Setting) {
+	usr, _ := user.Current()
+
+	conf.PathAlias["UserHome"] = usr.HomeDir
+
+	conf.PathAlias["Temp"] = os.TempDir()
+}
+
+func resolvePathAlias(folderPattern string, pathAlias map[string]string) string {
+	enablelias := regexp.MustCompile(`{[^}]+}`).FindAllStringSubmatch(folderPattern, -1)
+	resovelPath := folderPattern
+	for _, v := range enablelias {
+		aliasName := strings.TrimRight(strings.TrimLeft(v[0], "{"), "}")
+		aliasVal, ok := pathAlias[aliasName]
+		if !ok {
+			log.Fatal("unknown path alias : " + aliasName + " in " + folderPattern)
+		}
+		resovelPath = strings.Replace(folderPattern, v[0], aliasVal, -1)
+	}
+	return resovelPath
+}
+
+func readLinkText(linkText string, pathAlias map[string]string) LinkConfig {
 	split := strings.Split(linkText, "@")
 	if len(split) > 2 {
 		log.Fatal("unknown text" + linkText)
@@ -65,8 +85,7 @@ func readLinkText(linkText string) LinkConfig {
 		split = split[1:]
 	}
 
-	ret.FolderPattern = split[0]
-
+	ret.FolderPattern = resolvePathAlias(split[0], pathAlias);
 	return ret
 }
 

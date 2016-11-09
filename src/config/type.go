@@ -36,6 +36,8 @@ type Symbolic struct {
 	Action     string
 
 	Target     string
+
+	//初化化解析后，放入 []LinkConfig ,该不会再使用
 	Link       []string
 
 	LinkConfig []LinkConfig

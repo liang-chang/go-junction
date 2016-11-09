@@ -3,49 +3,27 @@ package main
 import (
 	//"util"
 	"config"
-	"os"
-	"fmt"
 	//"junction"
 	//"syscall"
 	//"action"
 	//"util"
 	//"unsafe"
 	//	"symbolic"
+	"action"
 )
 
 func main() {
+	confSetting := config.Read();
 
-	configs := config.Init();
+	config.MatchDirectory(confSetting)
 
-	fmt.Println(configs.PathAlias)
-	//fmt.Println(configs.Symbolic)
-	symbolics := configs.Symbolic
+	action.Call(confSetting.Action,confSetting);
 
-	fmt.Println("-----------------")
-	fmt.Println(configs.Symbolic)
 
-	for _, v := range symbolics {
-		fmt.Println(v)
-		fmt.Println(v.LinkConfig)
-	}
 
-	fmt.Println(symbolics)
 
-	linkConfig := config.LinkConfig{};
 
-	ret := config.GetMatchDirectory(`E:/|workspace|/.metadataT`, linkConfig)
 	//ret := action.GetPatternDirectory(`E:/|\d+$|/binn`)
-	for _, v := range ret {
-		_, err := os.Stat(v)
-		if err != nil {
-			fmt.Println(v + " err")
-		}
-		if os.IsNotExist(err) {
-			fmt.Println(v + " invalid")
-		} else {
-			fmt.Println(v)
-		}
-	}
 
 	//fmt.Println(directory.DirectoryExist("v:/tt"))
 	//fmt.Println(directory.DirectoryExist("v:/xxxxx"))
