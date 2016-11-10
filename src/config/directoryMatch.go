@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func MatchDirectory(conf Setting) {
+func MatchDirectory(conf *Setting) {
 	for i, symb := range conf.Symbolic {
 		for j, linkConf := range symb.LinkConfig {
 			matchedDir := getMatchDirectory(linkConf.FolderPattern, linkConf)

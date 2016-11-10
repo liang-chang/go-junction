@@ -2,19 +2,18 @@ package config
 
 import (
 	"testing"
-	"fmt"
-	"regexp"
+	//"fmt"
+	//"unsafe"
 	"strings"
+	"fmt"
+	"strconv"
 )
 
 func TestReadLinkText(t *testing.T) {
-
-	diskReg := regexp.MustCompile(`{{[^}]+}}`)
-
-	parts := diskReg.FindAllStringSubmatch(`V:\{{chrome}}\Defaultgfasdgfasdgasdgfasdgas{{temp}}`, -1)
-	for _, v := range parts {
-		fmt.Println(strings.TrimRight(strings.TrimLeft(v[0],"{{"),"}}"))
+	var s = `bclf@d:/|\d+$|/bin`;
+	index := strings.Index(s, "@")
+	if index < 0 {
+		index = 0
 	}
-
-	//readLinkText(`bclf@d:/|\d+$|/bin`)
+	fmt.Println("%" + strconv.Itoa(10 + index) + "s %s")
 }

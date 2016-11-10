@@ -6,7 +6,7 @@ backupLinkFolder = false
 clearBackupFolder = true
 
 #当目录文件夹无效时，跳过
-createTargetFolder = false
+createTargetFolder = true
 
 [pathAlias]
 #build in path variable

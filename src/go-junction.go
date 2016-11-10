@@ -1,27 +1,16 @@
 package main
 
 import (
-	//"util"
 	"config"
-	//"junction"
-	//"syscall"
-	//"action"
-	//"util"
-	//"unsafe"
-	//	"symbolic"
 	"action"
 )
 
 func main() {
 	confSetting := config.Read();
 
-	config.MatchDirectory(confSetting)
+	config.MatchDirectory(&confSetting)
 
 	action.Call(confSetting.Action,confSetting);
-
-
-
-
 
 	//ret := action.GetPatternDirectory(`E:/|\d+$|/binn`)
 
@@ -40,8 +29,8 @@ func main() {
 
 	//var mountPoint symbolic.MountPointReparseBuffer
 	//var symbolicLink symbolic.SymbolicLinkReparseBuffer
-	//
-	//fmt.Println(unsafe.Sizeof(mountPoint))
+
+	// /fmt.Println(unsafe.Sizeof(mountPoint))
 	//fmt.Println(unsafe.Sizeof(symbolicLink))
 }
 

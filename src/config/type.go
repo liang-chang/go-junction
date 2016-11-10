@@ -2,10 +2,10 @@ package config
 
 
 //configs.Action 可用
-var Actions = [...]string{"list", "check", "make", "recovery"}
+var Actions = []string{"list", "check", "make", "recovery"}
 
 //Symbolic.Action 可用
-var SymbolicActions = [...]string{"ignore", "recovery"}
+var SymbolicActions = []string{"ignore", "recovery"}
 
 const FILE_SPLIT = "/"
 
@@ -47,7 +47,7 @@ type Symbolic struct {
 type LinkConfig struct {
 	FolderPattern   string
 
-	MatchFolder      []string
+	MatchFolder     []string
 
 	Backup          bool
 	Clear           bool

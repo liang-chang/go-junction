@@ -11,7 +11,6 @@ import (
 	"strings"
 	"os/user"
 	"regexp"
-	//"fmt"
 )
 
 const (
@@ -36,17 +35,18 @@ const (
  */
 func Read() Setting {
 	conf := readConfig()
-	setBuildInPathAlias(conf)
+	setBuildInPathAlias(&conf)
 	for i, symb := range conf.Symbolic {
-		for _, linkText := range symb.Link {
+		for j, linkText := range symb.Link {
 			conf.Symbolic[i].LinkConfig = append(conf.Symbolic[i].LinkConfig, readLinkText(linkText, conf.PathAlias))
+			conf.Symbolic[i].Link[j] = resolvePathAlias(linkText, conf.PathAlias)
 		}
 		conf.Symbolic[i].Target = resolvePathAlias(conf.Symbolic[i].Target, conf.PathAlias)
 	}
 	return conf
 }
 
-func setBuildInPathAlias(conf Setting) {
+func setBuildInPathAlias(conf *Setting) {
 	usr, _ := user.Current()
 
 	conf.PathAlias["UserHome"] = usr.HomeDir
@@ -123,7 +123,7 @@ func readConfig() Setting {
 		os.Exit(1)
 	}
 
-	var conf Setting
+	var conf = Setting{}
 
 	if _, err := toml.DecodeFile(*configFileName, &conf); err != nil {
 		log.Fatal(err)
