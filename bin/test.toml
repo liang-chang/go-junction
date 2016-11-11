@@ -10,7 +10,7 @@ createTargetFolder = true
 
 [pathAlias]
 #build in path variable
-# UserHome
+# UserHome  win7 like C:\Users\changsheng
 # Temp
 useless='C:/useless'
 chrome_cache='V:/chrome_cache'
@@ -20,7 +20,7 @@ firefox_cache='V:/firefox_cache'
 action="ignore"
 target = '{useless}/AAA'
 link = [
-'bclf@d:/|\d+$|/bin',
+'bc@d:/|\d+$|/bin',
 'v:/|cache$|'
 ]
 

@@ -3,14 +3,16 @@ package main
 import (
 	"config"
 	"action"
+	//"strconv"
 )
 
 func main() {
+
 	confSetting := config.Read();
 
 	config.MatchDirectory(&confSetting)
 
-	action.Call(confSetting.Action,confSetting);
+	action.Call(confSetting.Action, confSetting);
 
 	//ret := action.GetPatternDirectory(`E:/|\d+$|/binn`)
 

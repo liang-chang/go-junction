@@ -1,19 +1,17 @@
 package config
 
 import (
-	"testing"
 	//"fmt"
 	//"unsafe"
-	"strings"
+	//"strconv"
+	//"strings"
 	"fmt"
-	"strconv"
+	"testing"
 )
 
-func TestReadLinkText(t *testing.T) {
-	var s = `bclf@d:/|\d+$|/bin`;
-	index := strings.Index(s, "@")
-	if index < 0 {
-		index = 0
+func TestReadLinkText(s *testing.T) {
+	capitals := map[string]string{"France":"Paris", "Italy":"Rome", "Japan":"Tokyo" }
+	for key := range capitals {
+		fmt.Println("Map item: Capital of", key, "is", capitals[key])
 	}
-	fmt.Println("%" + strconv.Itoa(10 + index) + "s %s")
 }

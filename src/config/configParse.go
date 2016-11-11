@@ -34,6 +34,7 @@ const (
      读取配置文件，并进行配置的解读；进行 path alias 的替换
  */
 func Read() Setting {
+	log.
 	conf := readConfig()
 	setBuildInPathAlias(&conf)
 	for i, symb := range conf.Symbolic {
