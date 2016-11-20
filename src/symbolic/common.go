@@ -11,6 +11,7 @@ import (
 	"unsafe"
 	"strings"
 	"errors"
+	"unicode/utf16"
 )
 
 func IsReparsePoint(path string) (ret bool, err error) {
@@ -33,7 +34,7 @@ func internalJunctionGetTarget(handle syscall.Handle) (target string, err error)
 		nil, 0, (*byte)(unsafe.Pointer(&outBuffer)), uint32(unsafe.Sizeof(outBuffer)), &bytesReturned, nil);
 
 	if err == nil {
-		if outBuffer.header.ReparseTag != IO_REPARSE_TAG_MOUNT_POINT {
+		if outBuffer.ReparseTag != IO_REPARSE_TAG_MOUNT_POINT {
 			target = ""
 			err = errors.New("This Directory is not junction point.")
 			return
@@ -61,4 +62,26 @@ func openReparsePoint(reparsePoint string, accessMode uint32) (handle syscall.Ha
 	return
 }
 
+func (r *SymbolicLinkReparseBuffer) PrintName() string {
+	offset := r.PrintNameOffset / 2//微软官方文档中说要除了2
+	length := r.PrintNameLength / 2
+	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
+}
 
+func (r *SymbolicLinkReparseBuffer) SubstituteName() string {
+	offset := r.SubstituteNameOffset / 2//微软官方文档中说要除了2
+	length := r.SubstituteNameLength / 2
+	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
+}
+
+func (r *MountPointReparseBuffer) PrintName() string {
+	offset := r.PrintNameOffset / 2//微软官方文档中说要除了2
+	length := r.PrintNameLength / 2
+	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
+}
+
+func (r *MountPointReparseBuffer) SubstituteName() string {
+	offset := r.SubstituteNameOffset / 2//微软官方文档中说要除了2
+	length := r.SubstituteNameLength / 2
+	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
+}

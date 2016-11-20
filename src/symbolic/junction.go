@@ -52,16 +52,16 @@ func CreateJunction(junctionPoint string, targetDir string, overwrite bool) (res
 
 	reparseDataBuffer := MountPointReparseBuffer{}
 
-	reparseDataBuffer.header.ReparseTag = IO_REPARSE_TAG_MOUNT_POINT
+	reparseDataBuffer.ReparseTag = IO_REPARSE_TAG_MOUNT_POINT
 
 
 	//加上8个字节的 SubstituteNameOffset,SubstituteNameLength,PrintNameOffset,PrintNameLength
 	//官方文档  Mount Point Reparse Data Buffer
 	//This value is the length of the data starting at the SubstituteNameOffset field (or the size of the PathBuffer field, in bytes, plus 8).
 	//https://msdn.microsoft.com/en-us/library/cc232007.aspx
-	reparseDataBuffer.header.ReparseDataLength = uint16((len(substituteName) + len(printName)) * 2 + 8)
+	reparseDataBuffer.ReparseDataLength = uint16((len(substituteName) + len(printName)) * 2 + 8)
 
-	reparseDataBuffer.header.Reserved = 0
+	reparseDataBuffer.Reserved = 0
 
 	reparseDataBuffer.SubstituteNameOffset = 0
 
@@ -89,7 +89,7 @@ func CreateJunction(junctionPoint string, targetDir string, overwrite bool) (res
 	////第三个参数 inBufferSize = sizeof(REPARSE_DATA_BUFFER_HEADER)=8 的header
 	//即 4byte的ReparseTag+2byte的ReparseDataLength+2byte的Reserved
 	err = syscall.DeviceIoControl(handle, FSCTL_SET_REPARSE_POINT,
-		(*byte)(unsafe.Pointer(&reparseDataBuffer)), uint32(reparseDataBuffer.header.ReparseDataLength + 8), nil, 0, &bytesReturned, nil);
+		(*byte)(unsafe.Pointer(&reparseDataBuffer)), uint32(reparseDataBuffer.ReparseDataLength + 8), nil, 0, &bytesReturned, nil);
 
 	if err != nil {
 		return false, err

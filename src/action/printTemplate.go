@@ -2,21 +2,21 @@ package action
 
 const COMMON_TITLE = `
 Action : {{.Action}}
-BackupLinkFolder  : false
-ClearBackupFolder : true
-CreateTargetFolder: true
+BackupLinkFolder  : {{.Config.BackupLinkFolder}}
+ClearBackupFolder : {{.Config.ClearBackupFolder}}
+CreateTargetFolder: {{.Config.CreateTargetFolder}}
 `
 
 const list_template = `
+{{- range $si, $symbo := .Symbolic -}}
 ---------------symbolic---------------
-action : ignore
-target : C:/useless/AAA
-link   : bc@d:/|\d+$|/bin
-match  :    d:/IntelliJ IDEA 15.0.2/bin
-	     d:/apache-maven-3.3.3/bin
-link   : v:/|cache$|
-match  : v:/chrome_cache
-	 v:/firefox_cache
-	 v:/opera_cache
-	 v:/safari_cache
+action : {{$symbo.Action}}
+target : {{$symbo.Target}}
+    {{range $ii,$linkConf := $symbo.LinkConfig}}
+link   : {{index $symbo.Link $ii -}}
+	 {{- range $mi,$mfolder := $linkConf.MatchFolder -}}
+{{if eq $mi 0}}
+match  : {{$mfolder -}}{{else}}         {{$mfolder -}}
+{{end}}
+{{end}}{{end}}{{end}}
 `

@@ -2,8 +2,14 @@ package main
 
 import (
 	"config"
-	"action"
+	//"action"
 	//"strconv"
+	//"fmt"
+	//"symbolic"
+	//"symbolic"
+	//"fmt"
+	//"symbolic"
+	"action"
 )
 
 func main() {
@@ -25,9 +31,9 @@ func main() {
 
 	//fmt.Println(directory.DirectoryExist("v:/xxxxx.txt"))
 	//fmt.Println(symbolic.GetJunctionTarget("V:/tt"));
-	//fmt.Println(junction.IsJunction("v:/tt"))
+	//fmt.Println(symbolic.IsJunction("v:/tt"))
 	//fmt.Println(symbolic.DeleteJunction("v:/tt"))
-	//fmt.Println(symbolic.CreateJunction("v:/tt", "v:/TEMP",true))
+	//fmt.Println(symbolic.CreateJunction("v:/tt", "V:/TEMP",true))
 
 	//var mountPoint symbolic.MountPointReparseBuffer
 	//var symbolicLink symbolic.SymbolicLinkReparseBuffer

@@ -1,6 +1,5 @@
 package symbolic
 
-import "unicode/utf16"
 
 //Determining Whether a Directory Is a Mounted Folder
 //https://msdn.microsoft.com/en-us/library/aa363940.aspx
@@ -59,7 +58,7 @@ type REPARSE_DATA_BUFFER_HEADER struct {
 //https://msdn.microsoft.com/en-us/library/cc232006.aspx
 //MountPointReparseBuffer
 type   SymbolicLinkReparseBuffer struct {
-	header               REPARSE_DATA_BUFFER_HEADER
+	REPARSE_DATA_BUFFER_HEADER
 
 	/// Offset, in bytes, of the substitute name string in the PathBuffer array.
 	SubstituteNameOffset uint16
@@ -85,22 +84,11 @@ type   SymbolicLinkReparseBuffer struct {
 	PathBuffer           [1048]uint16
 }
 
-func (r *SymbolicLinkReparseBuffer) PrintName() string {
-	offset := r.PrintNameOffset / 2//微软官方文档中说要除了2
-	length := r.PrintNameLength / 2
-	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
-}
 
-func (r *SymbolicLinkReparseBuffer) SubstituteName() string {
-	offset := r.SubstituteNameOffset / 2//微软官方文档中说要除了2
-	length := r.SubstituteNameLength / 2
-	//fmt.Println(string(utf16.Decode(r.PathBuffer[:])))
-	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
-}
 
 //junction point => IO_REPARSE_TAG_MOUNT_POINT (0xA0000003).
 type   MountPointReparseBuffer struct {
-	header               REPARSE_DATA_BUFFER_HEADER
+	REPARSE_DATA_BUFFER_HEADER
 
 	/// Offset, in bytes, of the substitute name string in the PathBuffer array.
 	SubstituteNameOffset uint16
@@ -125,17 +113,5 @@ type   MountPointReparseBuffer struct {
 	PathBuffer           [1048]uint16
 }
 
-func (r *MountPointReparseBuffer) PrintName() string {
-	offset := r.PrintNameOffset / 2//微软官方文档中说要除了2
-	length := r.PrintNameLength / 2
-	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
-}
-
-func (r *MountPointReparseBuffer) SubstituteName() string {
-	offset := r.SubstituteNameOffset / 2//微软官方文档中说要除了2
-	length := r.SubstituteNameLength / 2
-	//fmt.Println(string(utf16.Decode(r.PathBuffer[:])))
-	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
-}
 
 
