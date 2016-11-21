@@ -31,3 +31,11 @@ link = [
 'd:/|\d+$|/bin',
 '{chrome_cache}/|chrome$|'
 ]
+
+[[symbolic]]
+action="recovery"
+target = '{useless}/CC'
+link = [
+'d:/|\d+$|/bin',
+'{chrome_cache}/|chrome$|'
+]

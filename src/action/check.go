@@ -19,15 +19,20 @@ func check(conf config.Setting) {
 
 	var confMap map[string]interface{} = structs.Map(conf)
 
-	var symbolics []map[string]interface{} = confMap["Symbolic"].([]map[string]interface{});
+	var symbolics []interface{} = confMap["Symbolic"].([]interface{});
 
 	for sidex, symbo := range symbolics {
 
-		var target string = symbo["Target"].(string)
+		var target string = symbo.(map[string]interface{})["Target"].(string)
+
+		ret, _ := util.DirectoryExist(target)
+		if ret == false {
+			symbolics[sidex].(map[string]interface{})["Target"] = "Not Exist "+target
+		}
 
 		var linkConfigs []config.LinkConfig = conf.Symbolic[sidex].LinkConfig
 
-		symboMap := symbolics[sidex]
+		//symboMap := symbolics[sidex]
 
 		for lindex, linkConfCopy := range linkConfigs {
 
@@ -35,9 +40,9 @@ func check(conf config.Setting) {
 
 			fmt.Println(linkConf)
 
-			var matchFolder []string = linkConfCopy["MatchFolder"]
+			var matchFolder []string = linkConfCopy.MatchFolder
 
-			for folder := range matchFolder {
+			for _, folder := range matchFolder {
 				ret, _ := util.DirectoryExist(folder)
 				if ret == false {
 

@@ -22,12 +22,12 @@ match  : {{$mfolder -}}{{else}}         {{$mfolder -}}
 `
 
 const check_template = `
-{{- range $si, $symbo := .Symbolic -}}
+{{- range $si, $symbo := .Symbolic }}
 ---------------symbolic---------------
 action : {{$symbo.Action}}
 target : {{$symbo.Target}}
-    {{range $ii,$linkConf := $symbo.LinkConfig}}
-link   : {{index $symbo.Link $ii -}}
+    {{range $ii,$linkConf := $symbo.LinkConfig }}
+link   : {{index $symbo.Link $ii }}
 	 {{- range $mi,$mfolder := $linkConf.MatchFolder -}}
 {{if eq $mi 0}}
 match  : {{$mfolder -}}{{else}}         {{$mfolder -}}
