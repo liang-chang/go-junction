@@ -4,7 +4,11 @@ const COMMON_TITLE = `
 Action  : {{.Action}}
 BackupLinkFolder  : {{.Config.BackupLinkFolder}}
 ClearBackupFolder : {{.Config.ClearBackupFolder}}
-CreateTargetFolder: {{.Config.CreateTargetFolder}}
+CreateTargetFolder: {{.Config.CreateTargetFolder}}+
+{{- $index:=0}}
+PathAlias :{{range $name,$path := .PathAlias }}{{if eq $index 0}}{{$index := 1}}{{$index}}{{ $name}} => {{$path }}{{else}}
+{{$name}} => {{$path }}
+{{end}}{{end}}
 `
 
 const list_template = `
