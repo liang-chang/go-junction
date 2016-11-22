@@ -5,8 +5,9 @@ import (
 	"os"
 	"text/template"
 	"github.com/fatih/structs"
-	"fmt"
+	//"fmt"
 	"util"
+	"fmt"
 )
 
 func check(conf config.Setting) {
@@ -17,35 +18,33 @@ func check(conf config.Setting) {
 		os.Exit(1)
 	}
 
-	var confMap map[string]interface{} = structs.Map(conf)
+	symbolics := conf.Symbolic
 
-	var symbolics []interface{} = confMap["Symbolic"].([]interface{});
+	for sidex, symboT := range conf.Symbolic {
 
-	for sidex, symbo := range symbolics {
-
-		var target string = symbo.(map[string]interface{})["Target"].(string)
+		var target string = symboT.Target
 
 		ret, _ := util.DirectoryExist(target)
 		if ret == false {
-			symbolics[sidex].(map[string]interface{})["Target"] = "Not Exist "+target
+			symbolics[sidex].Target = "NE -> " + target
 		}
 
 		var linkConfigs []config.LinkConfig = conf.Symbolic[sidex].LinkConfig
 
 		//symboMap := symbolics[sidex]
 
-		for lindex, linkConfCopy := range linkConfigs {
+		for lindex, _ := range linkConfigs {
 
 			linkConf := linkConfigs[lindex]
 
 			fmt.Println(linkConf)
 
-			var matchFolder []string = linkConfCopy.MatchFolder
+			var matchFolder []string = linkConfigs[lindex].MatchFolder
 
-			for _, folder := range matchFolder {
+			for mi, folder := range matchFolder {
 				ret, _ := util.DirectoryExist(folder)
 				if ret == false {
-
+					matchFolder[mi] = "NE -> " + folder
 				}
 			}
 
@@ -54,6 +53,8 @@ func check(conf config.Setting) {
 	}
 
 	tmpl = template.Must(template.New("check_template").Parse(check_template))
+
+	var confMap map[string]interface{} = structs.Map(conf)
 
 	if err := tmpl.Execute(os.Stdout, confMap); err != nil {
 		panic(err)
