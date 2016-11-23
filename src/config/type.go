@@ -52,6 +52,9 @@ type LinkConfig struct {
 	Backup          bool
 	Clear           bool
 
+	//是否在target文件夹中创建隔离文件夹
+	Isolate         bool
+
 	//即当最后一级文件目录不存在时，创建文件夹
 	LastDirAppender bool
 

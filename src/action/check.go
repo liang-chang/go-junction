@@ -26,7 +26,7 @@ func check(conf config.Setting) {
 
 		ret, _ := util.DirectoryExist(target)
 		if ret == false {
-			symbolics[sidex].Target = "NE -> " + target
+			symbolics[sidex].Target = "ERROR  ->  " + target +"  ------->  Folder Not exist!"
 		}
 
 		var linkConfigs []config.LinkConfig = conf.Symbolic[sidex].LinkConfig

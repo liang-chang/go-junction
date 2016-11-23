@@ -90,12 +90,18 @@ func readLinkText(linkText string, pathAlias map[string]string) LinkConfig {
 }
 
 func setLinkCmd(cmd string, linkConfg *LinkConfig) {
+	cmd = strings.ToLower(cmd)
 	if strings.Contains(cmd, "b") {
 		linkConfg.Backup = true
 		if strings.Contains(cmd, "c") {
 			linkConfg.Clear = true
 		}
 	}
+
+	if strings.Contains(cmd, "i") {
+		linkConfg.Isolate = true
+	}
+
 	if strings.Contains(cmd, "l") {
 		linkConfg.LastDirAppender = true
 	}
