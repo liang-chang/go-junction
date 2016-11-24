@@ -24,3 +24,38 @@ func Call(actionName string, conf config.Setting) {
 	}
 	fun(conf)
 }
+
+type DoTarget func(target string, symbolic *config.Symbolic) int
+
+type DoLink func(target, link string, folderIndex int, linkConfig *config.LinkConfig) int
+
+func TraversalSymbolic(symbolics  []config.Symbolic, doTarget DoTarget, doLink DoLink) (errCnt, warnCnt int) {
+	errCnt = 0
+	warnCnt = 0
+	for sidex, symboT := range symbolics {
+
+		var target string = symboT.Target
+
+		errCnt += doTarget(target, &symbolics[sidex]);
+
+		var linkConfigs []config.LinkConfig = symbolics[sidex].LinkConfig
+
+		for lindex, _ := range linkConfigs {
+
+			linkConf := &linkConfigs[lindex]
+
+			var matchFolder []string = linkConf.MatchFolder
+
+			if len(matchFolder) == 0 {
+				warnCnt++
+				linkConf.MatchFolder = append(linkConf.MatchFolder, "Warn No Match Folder !")
+				continue
+			}
+
+			for matchIndex, link := range matchFolder {
+				errCnt += doLink(target, link, matchIndex, linkConf);
+			}
+		}
+	}
+	return errCnt, warnCnt
+}

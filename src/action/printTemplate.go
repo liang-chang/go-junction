@@ -29,9 +29,12 @@ const check_template = `
 action : {{$symbo.Action}}
 target : {{$symbo.Target}}
 {{range $ii,$linkConf := $symbo.LinkConfig }}
-link   : {{index $symbo.Link $ii }}
+link   : {{index $symbo.Link $ii -}}
 {{- range $mi,$mfolder := $linkConf.MatchFolder -}}
 {{if eq $mi 0}}
 match  : {{$mfolder -}}{{else}}         {{$mfolder -}}{{end}}
 {{end}}{{end}}{{end}}
+-------------------------------
+Warn  : {{.WarnCount}}
+Error : {{.ErrorCount}}
 `

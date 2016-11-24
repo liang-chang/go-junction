@@ -7,7 +7,6 @@ import (
 	"github.com/fatih/structs"
 	//"fmt"
 	"util"
-	"fmt"
 )
 
 func check(conf config.Setting) {
@@ -20,41 +19,37 @@ func check(conf config.Setting) {
 
 	symbolics := conf.Symbolic
 
-	for sidex, symboT := range conf.Symbolic {
-
-		var target string = symboT.Target
-
+	var doTarget = func(target string, symbolic *config.Symbolic) (errCnt int) {
 		ret, _ := util.DirectoryExist(target)
 		if ret == false {
-			symbolics[sidex].Target = "ERROR  ->  " + target +"  ------->  Folder Not exist!"
+			symbolic.Target = "ERROR  ->  " + target + "  ------->  Folder Not exist!"
+			errCnt = 1
+		} else {
+			errCnt = 0
 		}
-
-		var linkConfigs []config.LinkConfig = conf.Symbolic[sidex].LinkConfig
-
-		//symboMap := symbolics[sidex]
-
-		for lindex, _ := range linkConfigs {
-
-			linkConf := linkConfigs[lindex]
-
-			fmt.Println(linkConf)
-
-			var matchFolder []string = linkConfigs[lindex].MatchFolder
-
-			for mi, folder := range matchFolder {
-				ret, _ := util.DirectoryExist(folder)
-				if ret == false {
-					matchFolder[mi] = "NE -> " + folder
-				}
-			}
-
-		}
-
+		return errCnt
 	}
+
+	var doLink = func(target, link string, folderIndex int, linkConfig *config.LinkConfig) (errCnt int) {
+		ret, _ := util.DirectoryExist(link)
+		if ret == false {
+			linkConfig.MatchFolder[folderIndex] = "NE -> " + link
+			errCnt = 1
+		}
+		errCnt = 0
+		return errCnt
+	}
+
+	errCnt, warnCnt := TraversalSymbolic(symbolics, doTarget, doLink)
 
 	tmpl = template.Must(template.New("check_template").Parse(check_template))
 
 	var confMap map[string]interface{} = structs.Map(conf)
+
+	confMap["ErrorCount"] = errCnt
+	confMap["WarnCount"] = warnCnt
+
+
 
 	if err := tmpl.Execute(os.Stdout, confMap); err != nil {
 		panic(err)
