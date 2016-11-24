@@ -22,7 +22,7 @@ func check(conf config.Setting) {
 	var doTarget = func(target string, symbolic *config.Symbolic) (errCnt int) {
 		ret, _ := util.DirectoryExist(target)
 		if ret == false {
-			symbolic.Target = "ERROR  ->  " + target + "  ------->  Folder Not exist!"
+			symbolic.Target = "Error! " + target + "  not exist !"
 			errCnt = 1
 		} else {
 			errCnt = 0
@@ -48,8 +48,6 @@ func check(conf config.Setting) {
 
 	confMap["ErrorCount"] = errCnt
 	confMap["WarnCount"] = warnCnt
-
-
 
 	if err := tmpl.Execute(os.Stdout, confMap); err != nil {
 		panic(err)

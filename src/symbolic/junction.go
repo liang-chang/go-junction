@@ -5,7 +5,7 @@ package symbolic
 //https://github.com/golang/go/blob/master/src/os/os_windows_test.go
 
 import (
-//	"util"
+	//	"util"
 	"os"
 	"syscall"
 	"path/filepath"
@@ -165,8 +165,10 @@ func IsJunction(path string) bool {
 		return false
 	}
 
-	_, err = internalJunctionGetTarget(handle)
-	if err != nil {
+	var reparseType int
+
+	_, reparseType, err = getReparseTarget(handle)
+	if err != nil || reparseType != IO_REPARSE_TAG_MOUNT_POINT {
 		return false
 	}
 
@@ -181,12 +183,21 @@ func GetJunctionTarget(junctionPoint string) (target string, err error) {
 	handle, err = openReparsePoint(junctionPoint, syscall.GENERIC_READ)
 
 	if err == nil {
-		target, err = internalJunctionGetTarget(handle);
+		var reparseType int
+
+		var reparseTarget string
+
+		reparseTarget, reparseType, err = getReparseTarget(handle);
+
+		if reparseType != IO_REPARSE_TAG_MOUNT_POINT {
+			err = errors.New(junctionPoint + " is not junction point !")
+			return
+		}
+		target = reparseTarget
 	}
 
 	defer syscall.CloseHandle(handle)
 
 	return
-
 }
 

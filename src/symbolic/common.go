@@ -10,7 +10,7 @@ import (
 	//"bytes"
 	"unsafe"
 	"strings"
-	"errors"
+	//"errors"
 	"unicode/utf16"
 )
 
@@ -22,7 +22,11 @@ func IsReparsePoint(path string) (ret bool, err error) {
 	return attrs & syscall.FILE_ATTRIBUTE_DIRECTORY > 0, nil
 }
 
-func internalJunctionGetTarget(handle syscall.Handle) (target string, err error) {
+/*
+reparseType -> syscall.IO_REPARSE_TAG_SYMLINK 符号链接
+	       IO_REPARSE_TAG_MOUNT_POINT     junction
+ */
+func getReparseTarget(handle syscall.Handle) (target string, reparseType int, err error) {
 
 	var bytesReturned uint32;
 
@@ -34,13 +38,20 @@ func internalJunctionGetTarget(handle syscall.Handle) (target string, err error)
 		nil, 0, (*byte)(unsafe.Pointer(&outBuffer)), uint32(unsafe.Sizeof(outBuffer)), &bytesReturned, nil);
 
 	if err == nil {
-		if outBuffer.ReparseTag != IO_REPARSE_TAG_MOUNT_POINT {
-			target = ""
-			err = errors.New("This Directory is not junction point.")
-			return
-		}
 
-		target = outBuffer.SubstituteName();
+		if outBuffer.ReparseTag == syscall.IO_REPARSE_TAG_SYMLINK {
+
+			var symbolicLink *SymbolicLinkReparseBuffer;
+			symbolicLink = (*SymbolicLinkReparseBuffer)(unsafe.Pointer(&outBuffer))
+
+			target = symbolicLink.SubstituteName()
+			reparseType = int(outBuffer.ReparseTag)
+
+		} else if outBuffer.ReparseTag == IO_REPARSE_TAG_MOUNT_POINT {
+
+			target = outBuffer.SubstituteName();
+			reparseType = int(outBuffer.ReparseTag)
+		}
 		if (strings.HasPrefix(target, NonInterpretedPathPrefix)) {
 			target = target[len(NonInterpretedPathPrefix):]
 		}

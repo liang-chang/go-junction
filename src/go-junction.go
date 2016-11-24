@@ -10,6 +10,8 @@ import (
 	//"fmt"
 	//"symbolic"
 	"action"
+	"symbolic"
+	"fmt"
 )
 
 func main() {
@@ -30,7 +32,8 @@ func main() {
 	//fmt.Println(os.RemoveAll("v:/aa"))
 
 	//fmt.Println(directory.DirectoryExist("v:/xxxxx.txt"))
-	//fmt.Println(symbolic.GetJunctionTarget("V:/tt"));
+	fmt.Println(symbolic.GetJunctionTarget("V:/tt"));
+	fmt.Println(symbolic.GetJunctionTarget("V:/t2"));
 	//fmt.Println(symbolic.IsJunction("v:/tt"))
 	//fmt.Println(symbolic.DeleteJunction("v:/tt"))
 	//fmt.Println(symbolic.CreateJunction("v:/tt", "V:/TEMP",true))

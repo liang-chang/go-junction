@@ -74,7 +74,7 @@ type   SymbolicLinkReparseBuffer struct {
 	/// PrintNameLength does not include space for the null character.
 	PrintNameLength      uint16
 
-	//Flags                uint32
+	Flags                uint32
 	/// A buffer containing the unicode-encoded path string. The path string contains
 	/// the substitute name string and print name string.
 	//PathBuffer           [1]uint16

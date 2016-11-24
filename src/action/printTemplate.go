@@ -14,12 +14,14 @@ const list_template = `
 ---------------symbolic---------------
 action : {{$symbo.Action}}
 target : {{$symbo.Target}}
-    {{range $ii,$linkConf := $symbo.LinkConfig}}
-link   : {{index $symbo.Link $ii }}
-{{- range $mi,$mfolder := $linkConf.MatchFolder -}}
+{{range $ii,$linkConf := $symbo.LinkConfig}}
+link   : {{index $symbo.Link $ii -}}
+	{{if gt (len $linkConf.MatchFolder) 0}}
+	{{- range $mi,$mfolder := $linkConf.MatchFolder -}}
 {{if eq $mi 0}}
-match  : {{$mfolder -}}{{else}}         {{ $mfolder -}}
-{{end}}
+match  : {{$mfolder}}{{else}}	     {{$mfolder}}{{end }}
+{{end}}{{else}}
+match  : No directory match !
 {{end}}{{end}}{{end}}
 `
 
@@ -35,6 +37,6 @@ link   : {{index $symbo.Link $ii -}}
 match  : {{$mfolder -}}{{else}}         {{$mfolder -}}{{end}}
 {{end}}{{end}}{{end}}
 -------------------------------
-Warn  : {{.WarnCount}}
-Error : {{.ErrorCount}}
+Warning : {{.WarnCount}}
+Error   : {{.ErrorCount}}
 `
