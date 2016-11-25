@@ -5,7 +5,6 @@ import (
 	"os"
 	"text/template"
 	"github.com/fatih/structs"
-	//"fmt"
 	"util"
 )
 
