@@ -1,11 +1,11 @@
 [config]
-# 原始文件夹重命名备份
+# link文件夹重命名备份
 backupLinkFolder = false
 
-# 清空原始文件夹
+# 清空备份的文件夹
 clearBackupFolder = true
 
-#当目录文件夹无效时，跳过
+#当target文件不存在时，创建
 createTargetFolder = true
 
 [pathAlias]
@@ -17,7 +17,7 @@ chrome_cache='V:/chrome_cache'
 firefox_cache='V:/firefox_cache'
 
 [[symbolic]]
-action="ignore"
+skip=true
 target = '{useless}/AAA'
 link = [
 'bc@d:/|\d+$|/bin',
@@ -25,16 +25,7 @@ link = [
 ]
 
 [[symbolic]]
-action="recovery"
 target = '{useless}/B'
-link = [
-'d:/|\d+$|/bin',
-'{chrome_cache}/|chrome$|'
-]
-
-[[symbolic]]
-action="recovery"
-target = '{useless}/CC'
 link = [
 'd:/|\d+$|/bin',
 '{chrome_cache}/|chrome$|'

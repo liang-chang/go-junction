@@ -25,9 +25,9 @@ func Call(actionName string, conf config.Setting) {
 	fun(conf)
 }
 
-type DoTarget func(target string, symbolic *config.Symbolic) (errCnt,warnCnt int)
+type DoTarget func(target string, symbolic *config.Symbolic) (errCnt, warnCnt int)
 
-type DoLink func(target, link string, folderIndex int, linkConfig *config.LinkConfig) (errCnt,warnCnt int)
+type DoLink func(target, link string, folderIndex int, linkConfig *config.LinkConfig) (errCnt, warnCnt int)
 
 func TraversalSymbolic(symbolics  []config.Symbolic, doTarget DoTarget, doLink DoLink) (errCnt, warnCnt int) {
 	errCnt = 0
@@ -36,7 +36,9 @@ func TraversalSymbolic(symbolics  []config.Symbolic, doTarget DoTarget, doLink D
 
 		var target string = symboT.Target
 
-		errCnt += doTarget(target, &symbolics[sidex]);
+		e, w := doTarget(target, &symbolics[sidex]);
+		errCnt += e
+		warnCnt += w
 
 		var linkConfigs []config.LinkConfig = symbolics[sidex].LinkConfig
 
@@ -53,7 +55,9 @@ func TraversalSymbolic(symbolics  []config.Symbolic, doTarget DoTarget, doLink D
 			}
 
 			for matchIndex, link := range matchFolder {
-				errCnt += doLink(target, link, matchIndex, linkConf);
+				e, w := doLink(target, link, matchIndex, linkConf);
+				errCnt += e
+				warnCnt += w
 			}
 		}
 	}

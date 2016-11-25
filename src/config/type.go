@@ -32,8 +32,8 @@ type GlobalConfig struct {
 type Symbolic struct {
 	//类型，可选项: junction(只能针对文件夹) , hardlink(只能针对文件) , symbolic(两者都可以)
 	//Type       string
-	//ignore , recovery
-	Action     string
+	//ignore
+	Skip       bool
 
 	Target     string
 

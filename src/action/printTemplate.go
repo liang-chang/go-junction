@@ -12,7 +12,7 @@ PathAlias :{{range $name,$path := .PathAlias }}
 const list_template = `
 {{- range $si, $symbo := .Symbolic }}
 ---------------symbolic---------------
-action : {{$symbo.Action}}
+skip   : {{$symbo.Skip}}
 target : {{$symbo.Target}}
 {{range $ii,$linkConf := $symbo.LinkConfig}}
 link   : {{index $symbo.Link $ii -}}
@@ -28,7 +28,7 @@ match  : No directory match !
 const check_template = `
 {{- range $si, $symbo := .Symbolic }}
 ---------------symbolic---------------
-action : {{$symbo.Action}}
+skip   : {{$symbo.Skip}}
 target : {{$symbo.Target}}
 {{range $ii,$linkConf := $symbo.LinkConfig }}
 link   : {{index $symbo.Link $ii -}}

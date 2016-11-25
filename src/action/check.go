@@ -26,7 +26,7 @@ func check(conf config.Setting) {
 		} else {
 			errCnt = 0
 		}
-		return errCnt
+		return
 	}
 
 	var doLink = func(target, link string, folderIndex int, linkConfig *config.LinkConfig) (errCnt,warnCnt int) {
@@ -36,7 +36,7 @@ func check(conf config.Setting) {
 			errCnt = 1
 		}
 		errCnt = 0
-		return errCnt
+		return
 	}
 
 	errCnt, warnCnt := TraversalSymbolic(symbolics, doTarget, doLink)
