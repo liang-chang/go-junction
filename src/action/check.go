@@ -18,7 +18,7 @@ func check(conf config.Setting) {
 
 	symbolics := conf.Symbolic
 
-	var doTarget = func(target string, symbolic *config.Symbolic) (errCnt int) {
+	var doTarget = func(target string, symbolic *config.Symbolic) (errCnt,warnCnt int) {
 		ret, _ := util.DirectoryExist(target)
 		if ret == false {
 			symbolic.Target = "Error! " + target + "  not exist !"
@@ -29,7 +29,7 @@ func check(conf config.Setting) {
 		return errCnt
 	}
 
-	var doLink = func(target, link string, folderIndex int, linkConfig *config.LinkConfig) (errCnt int) {
+	var doLink = func(target, link string, folderIndex int, linkConfig *config.LinkConfig) (errCnt,warnCnt int) {
 		ret, _ := util.DirectoryExist(link)
 		if ret == false {
 			linkConfig.MatchFolder[folderIndex] = "NE -> " + link

@@ -25,9 +25,9 @@ func Call(actionName string, conf config.Setting) {
 	fun(conf)
 }
 
-type DoTarget func(target string, symbolic *config.Symbolic) int
+type DoTarget func(target string, symbolic *config.Symbolic) (errCnt,warnCnt int)
 
-type DoLink func(target, link string, folderIndex int, linkConfig *config.LinkConfig) int
+type DoLink func(target, link string, folderIndex int, linkConfig *config.LinkConfig) (errCnt,warnCnt int)
 
 func TraversalSymbolic(symbolics  []config.Symbolic, doTarget DoTarget, doLink DoLink) (errCnt, warnCnt int) {
 	errCnt = 0
