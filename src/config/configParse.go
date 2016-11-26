@@ -16,9 +16,9 @@ import (
 const (
 	actionParamName = "action"
 
-	actionDefault = "list" //list check create recovery
+	actionDefault = "list" //list check make recovery
 
-	actoinUsageText = "action can only one of those: check create update"
+	actoinUsageText = "action can only one of those: list check make recovery"
 
 	//参数默认名称
 	configParamName = "config"
@@ -36,12 +36,13 @@ const (
 func Read() Setting {
 	conf := readConfig()
 	setBuildInPathAlias(&conf)
-	for i, symb := range conf.Symbolic {
-		for j, linkText := range symb.Link {
-			conf.Symbolic[i].LinkConfig = append(conf.Symbolic[i].LinkConfig, readLinkText(linkText, conf.PathAlias))
-			conf.Symbolic[i].Link[j] = resolvePathAlias(linkText, conf.PathAlias)
+	for i, symbCopy := range conf.Symbolic {
+		symbolic := &conf.Symbolic[i]
+		for j, linkText := range symbCopy.Link {
+			symbolic.LinkConfig = append(symbolic.LinkConfig, readLinkText(linkText, conf.PathAlias))
+			symbolic.Link[j] = resolvePathAlias(linkText, conf.PathAlias)
 		}
-		conf.Symbolic[i].Target = resolvePathAlias(conf.Symbolic[i].Target, conf.PathAlias)
+		symbolic.Target = resolvePathAlias(symbolic.Target, conf.PathAlias)
 	}
 	return conf
 }
@@ -49,9 +50,14 @@ func Read() Setting {
 func setBuildInPathAlias(conf *Setting) {
 	usr, _ := user.Current()
 
-	conf.PathAlias["UserHome"] = usr.HomeDir
+	conf.PathAlias["UserHome"] = strings.Replace(usr.HomeDir, `\`, `/`, -1)
 
-	conf.PathAlias["Temp"] = os.TempDir()
+	conf.PathAlias["Temp"] = strings.Replace(os.TempDir(), `\`, `/`, -1)
+
+	for key, value := range conf.PathAlias {
+		conf.PathAlias[key] = resolvePathAlias(value, conf.PathAlias)
+	}
+
 }
 
 func resolvePathAlias(folderPattern string, pathAlias map[string]string) string {
@@ -107,6 +113,10 @@ func setLinkCmd(cmd string, linkConfg *LinkConfig) {
 	}
 	if strings.Contains(cmd, "f") {
 		linkConfg.ForeceCreate = true
+	}
+
+	if strings.Contains(cmd, "w") {
+		linkConfg.WarnIgnore = true
 	}
 
 }

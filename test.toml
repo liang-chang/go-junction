@@ -12,21 +12,22 @@ createTargetFolder = true
 #build in path variable
 # UserHome  win7 like C:\Users\changsheng
 # Temp
-useless='C:/useless'
-chrome_cache='V:/chrome_cache'
-firefox_cache='V:/firefox_cache'
+Useless='C:/useless'
+ChromeCache='V:/chrome_cache'
+FirefoxCache='V:/firefox_cache'
+QQData='{UserHome}/AppData/Roaming/Tencent'
 
 [[symbolic]]
 skip=true
-target = '{useless}/AAA'
+target = '{Useless}/AAA'
 link = [
 'bc@d:/|\d+$|/bin',
 'v:/|cache$|'
 ]
 
 [[symbolic]]
-target = '{useless}/B'
+target = '{Useless}/B'
 link = [
 'd:/|\d+$|/bin',
-'{chrome_cache}/|chrome$|'
+'{ChromeCache}/|chrome$|'
 ]

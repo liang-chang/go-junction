@@ -49,6 +49,7 @@ func TraversalSymbolic(symbolics  []config.Symbolic, doTarget DoTarget, doLink D
 			var matchFolder []string = linkConf.MatchFolder
 
 			if len(matchFolder) == 0 {
+				doLink(target, "", -1, linkConf);
 				warnCnt++
 				linkConf.MatchFolder = append(linkConf.MatchFolder, "Warning! No directory match !")
 				continue

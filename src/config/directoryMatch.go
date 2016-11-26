@@ -62,7 +62,7 @@ func getMatchDirectory(pathPattern string, linkConfg LinkConfig) []string {
 		}
 
 		//包含正则的路径字串
-		namePattern = strings.Trim(namePattern, "|")
+		namePattern = `(?i)` + strings.Trim(namePattern, "|")
 		//最后一路径是正则的必须要存在
 		matchedDirs = appendPatternDir(matchedDirs, namePattern, linkConfg, isLast)
 	}
@@ -99,8 +99,9 @@ func appendDir(parsedDirs []string, appendDir string, linkConfg LinkConfig, isLa
 		return ret
 	}
 
+	appendDir = strings.ToLower(appendDir)
 	match := func(d os.FileInfo) bool {
-		return d.IsDir()&&d.Name() == appendDir
+		return d.IsDir()&&strings.ToLower(d.Name()) == appendDir
 	}
 
 	retDirs := traversalDir(parsedDirs, appendDir, match, linkConfg);

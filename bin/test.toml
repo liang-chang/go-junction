@@ -10,23 +10,63 @@ createTargetFolder = true
 
 [pathAlias]
 #build in path variable
-# UserHome  win7 like C:\Users\changsheng
+# UserHome  win7 like C:/Users/changsheng
 # Temp
-useless='C:/useless'
-chrome_cache='V:/chrome_cache'
-firefox_cache='V:/firefox_cache'
+useless='V:/useless'
+chromeCache='V:/chrome_cache'
+firefoxCache='V:/firefox_cache'
+appDataRoaming='{UserHome}/AppData/Roaming'
+appDataLocal='{UserHome}/AppData/Local'
+QQDataHome='{UserHome}/AppData/Roaming/Tencent'
 
 [[symbolic]]
 skip=true
-target = '{useless}/AAA'
+target = '{useless}/A'
 link = [
-'bc@d:/|\d+$|/bin',
-'v:/|cache$|'
+'{UserHome}/logs',
+'{UserHome}/diamond/logs',
+'{UserHome}/.dubbo',
+'{UserHome}/.WebIde70/system/log',
+'{UserHome}/.WebStorm7/system/log',
 ]
 
 [[symbolic]]
 target = '{useless}/B'
 link = [
-'d:/|\d+$|/bin',
-'{chrome_cache}/|chrome$|'
+'{QQDataHome}/Logs',
+'{QQDataHome}/QQ/AuTemp',
+'{QQDataHome}/QQ/Misc/com.tencent.advertisement',
+'{QQDataHome}/QQ/Misc/com.tencent.gamelife/QQGameLife',
+'{QQDataHome}/QQ/Misc/com.tencent.qqgame',
+'{QQDataHome}/QQ/Misc/com.tencent.qzone',
+'{QQDataHome}/QQ/Misc/com.tencent.soso',
+'{QQDataHome}/QQ/Misc/Com.Tencent.SuperQQVip',
+'{QQDataHome}/QQ/Misc/com.tencent.today',
+'{QQDataHome}/QQ/Misc/com.tencent.wireless',
+'{QQDataHome}/QQ/Misc/com.tencent.weather',
+'{QQDataHome}/QQ/Misc/LogoFile',
+'{QQDataHome}/QQ/Skins',
+'{QQDataHome}/QQ/STemp',
+'{QQDataHome}/QQ/temp',
+'{QQDataHome}/QQ/webkit_cache',
+'{QQDataHome}/QQMusic/Log/QzoneMusic',
+'{QQDataHome}/Tencentdl',
+'{QQDataHome}/TXSSO/SetupLogs',
+'{QQDataHome}/Users/|\d+|/QQ/WinTemp',
+]
+
+[[symbolic]]
+target = '{useless}/C'
+link = [
+'{appDataRoaming}/Adobe/Flash Player/AssetCache',
+'{appDataRoaming}/BaiduYunGuanjia/logs',
+'{appDataRoaming}/DiskDefrag',
+'{appDataRoaming}/KuGou8/log',
+'{appDataRoaming}/Macromedia/Flash Player',
+'{appDataRoaming}/Unified Remote/Logs',
+'{appDataRoaming}/XMusic/log',
+'{appDataRoaming}/XMusic/XMusicCache',
+'{appDataRoaming}/XMusicServer/XMusicServerLog',
+'{appDataLocal}/Youdao/YNote/log',
+'{appDataLocal}/KSafe/KClear/Logs'
 ]

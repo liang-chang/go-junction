@@ -60,4 +60,7 @@ type LinkConfig struct {
 
 	//强制创建整个路径的文件夹
 	ForeceCreate    bool
+
+	//当目标文件夹不存在时，是否报警告
+	WarnIgnore      bool
 }
