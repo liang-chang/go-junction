@@ -6,7 +6,7 @@ backupLinkFolder = false
 clearBackupFolder = true
 
 #当target文件不存在时，创建
-createTargetFolder = true
+#createTargetFolder = true
 
 [pathAlias]
 #build in path variable
@@ -20,54 +20,25 @@ appDataLocal='{UserHome}/AppData/Local'
 QQDataHome='{UserHome}/AppData/Roaming/Tencent'
 
 [[symbolic]]
-skip=true
-target = '{useless}/A'
+skip=false
+target = 'v:/uselessTest/A'
 link = [
 'lf@{useless}/aaa',
-'w@{UserHome}/logs',
-'w@{UserHome}/diamond/logs',
-'w@{UserHome}/.dubbo',
-'w@{UserHome}/.WebIde70/system/log',
-'w@{UserHome}/.WebStorm7/system/log',
+'w@{useless}/Z',
+'w@{useless}/Y',
+'w@{useless}/X',
+'w@{useless}/U',
+'w@{useless}/V',
+'w@{useless}/W',
 ]
 
 [[symbolic]]
-target = '{useless}/B'
+target = 'v:/uselessTest/B'
 link = [
-'{QQDataHome}/Logs',
-'{QQDataHome}/QQ/AuTemp',
-'{QQDataHome}/QQ/Misc/com.tencent.advertisement',
-'{QQDataHome}/QQ/Misc/com.tencent.gamelife/QQGameLife',
-'{QQDataHome}/QQ/Misc/com.tencent.qqgame',
-'{QQDataHome}/QQ/Misc/com.tencent.qzone',
-'{QQDataHome}/QQ/Misc/com.tencent.soso',
-'{QQDataHome}/QQ/Misc/Com.Tencent.SuperQQVip',
-'{QQDataHome}/QQ/Misc/com.tencent.today',
-'{QQDataHome}/QQ/Misc/com.tencent.wireless',
-'{QQDataHome}/QQ/Misc/com.tencent.weather',
-'{QQDataHome}/QQ/Misc/LogoFile',
-'{QQDataHome}/QQ/Skins',
-'{QQDataHome}/QQ/STemp',
-'{QQDataHome}/QQ/temp',
-'{QQDataHome}/QQ/webkit_cache',
-'{QQDataHome}/QQMusic/Log/QzoneMusic',
-'{QQDataHome}/Tencentdl',
-'{QQDataHome}/TXSSO/SetupLogs',
-'{QQDataHome}/Users/|\d+|/QQ/WinTemp',
-]
-
-[[symbolic]]
-target = '{useless}/C'
-link = [
-'w@{appDataRoaming}/Adobe/Flash Player/AssetCache',
-'w@{appDataRoaming}/BaiduYunGuanjia/logs',
-'w@{appDataRoaming}/DiskDefrag',
-'w@{appDataRoaming}/KuGou8/log',
-'w@{appDataRoaming}/Macromedia/Flash Player',
-'w@{appDataRoaming}/Unified Remote/Logs',
-'w@{appDataRoaming}/XMusic/log',
-'w@{appDataRoaming}/XMusic/XMusicCache',
-'w@{appDataRoaming}/XMusicServer/XMusicServerLog',
-'w@{appDataLocal}/Youdao/YNote/log',
-'w@{appDataLocal}/KSafe/KClear/Logs'
+'w@{useless}/O',
+'w@{useless}/P',
+'w@{useless}/T',
+'w@{useless}/L',
+'w@{useless}/M',
+'w@{useless}/N',
 ]

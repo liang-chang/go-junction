@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func check(conf config.Setting) {
+func make(conf config.Setting) {
 	tmpl := template.Must(template.New("COMMON_TITLE").Parse(COMMON_TITLE))
 
 	if err := tmpl.Execute(os.Stdout, conf); err != nil {
@@ -20,10 +20,10 @@ func check(conf config.Setting) {
 
 	symbolics := conf.Symbolic
 
-	var varDoTarget = checkDoTarget
-	var vardoLink = checkDoLink
+	var varDoTarget = makeDoTarget
+	var varDoLink = makeDoLink
 
-	errCnt, warnCnt := TraversalSymbolic(&conf, symbolics, varDoTarget, vardoLink)
+	errCnt, warnCnt := TraversalSymbolic(&conf, symbolics, varDoTarget, varDoLink)
 
 	tmpl = template.Must(template.New("check_template").Parse(check_template))
 
@@ -38,18 +38,28 @@ func check(conf config.Setting) {
 	}
 }
 
-func checkDoTarget(target string, symbolic *config.Symbolic, conf *config.Setting) (errCnt, warnCnt int) {
+func makeDoTarget(target string, symbolic *config.Symbolic, conf *config.Setting) (errCnt, warnCnt int) {
+	if symbolic.Skip {
+		return
+	}
 	ret, _ := util.DirectoryExist(target)
 	if ret == false {
-		symbolic.Target = `Error! "` + target + `"  not exist !`
-		errCnt = 1
-	} else {
-		errCnt = 0
+		if !conf.Config.CreateTargetFolder {
+			symbolic.Target = `Error! "` + target + `"  not exist ! `
+			errCnt = 1
+			return
+		}
+
+		err := os.MkdirAll(target, os.ModePerm)
+		if err != nil {
+			symbolic.Target = `Error! "` + target + `"  create fail ! ` + err.Error()
+			errCnt = 1
+		}
 	}
 	return
 }
 
-func checkDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, symb *config.Symbolic, conf *config.Setting) (errCnt, warnCnt int) {
+func makeDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, symb *config.Symbolic, conf *config.Setting) (errCnt, warnCnt int) {
 	if folderIndex == -1 {
 		var warnText = ""
 		if !linkConfig.WarnIgnore {
@@ -60,13 +70,40 @@ func checkDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, 
 		return
 	}
 
+	if symb.Skip {
+		return
+	}
+
 	link := linkConfig.MatchFolder[folderIndex]
+
 	var ret bool
 	ret, _ = util.Exist(link)
+	//link 文件夹不存在，直接创建
 	if ret == false {
-		linkConfig.MatchFolder[folderIndex] = `Error ! "` + link + `" not exist !`
-		errCnt = 1
+		var err = os.MkdirAll(link, os.ModePerm)
+		if err != nil {
+			symb.Target = `Error! "` + link + `"  create fail ! ` + err.Error()
+			errCnt = 1
+			return
+		}
+		var success bool
+		success, err = symbolic.CreateJunction(link, target, true);
+		if !success {
+			symb.Target = `Error! "` + link + `"  create junction fail ! ` + err.Error()
+			errCnt = 1
+			return
+		}
 		return
+	}
+
+	if conf.Config.BackupLinkFolder || linkConfig.Backup {
+		var err error
+		//TODO 判断之前是否已有备份
+		if err = os.Rename(link, link + FOLDER_BACK_SUBFFIX); err != nil {
+			linkConfig.MatchFolder[folderIndex] = `Error ! ` + link + `   -->   backup "` + link + `" failed ! ` + err.Error()
+			errCnt = 1
+			return
+		}
 	}
 
 	ret, _ = util.IsReparsePoint(link)
@@ -89,6 +126,8 @@ func checkDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, 
 		errCnt = 1
 		return
 	}
+
+	//if
 
 	return
 }
