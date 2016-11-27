@@ -6,7 +6,7 @@ BackupLinkFolder  : {{.Config.BackupLinkFolder}}
 ClearBackupFolder : {{.Config.ClearBackupFolder}}
 CreateTargetFolder: {{.Config.CreateTargetFolder}}
 PathAlias :{{range $name,$path := .PathAlias }}
-           {{$name}} => {{$path -}}{{end -}}
+           {{$name}}  =>  {{$path -}}{{end -}}
 `
 
 const list_template = `

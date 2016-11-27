@@ -190,6 +190,7 @@ func GetJunctionTarget(junctionPoint string) (target string, err error) {
 		reparseTarget, reparseType, err = getReparseTarget(handle);
 
 		if reparseType != IO_REPARSE_TAG_MOUNT_POINT {
+			target = ""
 			err = errors.New(junctionPoint + " is not junction point !")
 			return
 		}

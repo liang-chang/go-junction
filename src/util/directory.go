@@ -16,6 +16,26 @@ func DirectoryExist(path string) (bool, error) {
 	return attrs & syscall.FILE_ATTRIBUTE_DIRECTORY > 0, err
 }
 
+func IsReparsePoint(path string) (bool, error) {
+	attrs, err := getFileAttributes(path);
+	if err != nil {
+		if err == syscall.ERROR_FILE_NOT_FOUND {
+			return false, nil
+		}
+		return false, err
+	}
+	return attrs & syscall.FILE_ATTRIBUTE_REPARSE_POINT > 0, err
+}
+
+func Exist(path string) (bool, error) {
+	attrs, err := getFileAttributes(path);
+	if err != nil {
+		return false, err
+	}
+
+	return (attrs & syscall.FILE_ATTRIBUTE_DIRECTORY > 0) || (attrs & syscall.FILE_ATTRIBUTE_DIRECTORY == 0), err
+}
+
 func FileExist(path string) (bool, error) {
 	attrs, err := getFileAttributes(path);
 	if err != nil {

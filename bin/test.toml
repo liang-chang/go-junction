@@ -23,11 +23,12 @@ QQDataHome='{UserHome}/AppData/Roaming/Tencent'
 skip=true
 target = '{useless}/A'
 link = [
-'{UserHome}/logs',
-'{UserHome}/diamond/logs',
-'{UserHome}/.dubbo',
-'{UserHome}/.WebIde70/system/log',
-'{UserHome}/.WebStorm7/system/log',
+'lf@{useless}/aaa',
+'w@{UserHome}/logs',
+'w@{UserHome}/diamond/logs',
+'w@{UserHome}/.dubbo',
+'w@{UserHome}/.WebIde70/system/log',
+'w@{UserHome}/.WebStorm7/system/log',
 ]
 
 [[symbolic]]
@@ -58,15 +59,15 @@ link = [
 [[symbolic]]
 target = '{useless}/C'
 link = [
-'{appDataRoaming}/Adobe/Flash Player/AssetCache',
-'{appDataRoaming}/BaiduYunGuanjia/logs',
-'{appDataRoaming}/DiskDefrag',
-'{appDataRoaming}/KuGou8/log',
-'{appDataRoaming}/Macromedia/Flash Player',
-'{appDataRoaming}/Unified Remote/Logs',
-'{appDataRoaming}/XMusic/log',
-'{appDataRoaming}/XMusic/XMusicCache',
-'{appDataRoaming}/XMusicServer/XMusicServerLog',
-'{appDataLocal}/Youdao/YNote/log',
-'{appDataLocal}/KSafe/KClear/Logs'
+'w@{appDataRoaming}/Adobe/Flash Player/AssetCache',
+'w@{appDataRoaming}/BaiduYunGuanjia/logs',
+'w@{appDataRoaming}/DiskDefrag',
+'w@{appDataRoaming}/KuGou8/log',
+'w@{appDataRoaming}/Macromedia/Flash Player',
+'w@{appDataRoaming}/Unified Remote/Logs',
+'w@{appDataRoaming}/XMusic/log',
+'w@{appDataRoaming}/XMusic/XMusicCache',
+'w@{appDataRoaming}/XMusicServer/XMusicServerLog',
+'w@{appDataLocal}/Youdao/YNote/log',
+'w@{appDataLocal}/KSafe/KClear/Logs'
 ]

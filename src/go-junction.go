@@ -9,6 +9,8 @@ import (
 	"action"
 	"log"
 	"os"
+	"fmt"
+	"util"
 )
 
 var logger *log.Logger;
@@ -37,7 +39,11 @@ func main() {
 	//fmt.Println(os.RemoveAll("v:/tt"))
 	//fmt.Println(os.RemoveAll("v:/aa"))
 
-	//fmt.Println(directory.DirectoryExist("v:/xxxxx.txt"))
+	//fmt.Println(util.IsReparsePoint("v:/xxxxx.txt"))
+	//fmt.Println(util.IsReparsePoint("v:/temp"))
+	//fmt.Println(util.IsReparsePoint("v:/t1"))
+	//fmt.Println(util.IsReparsePoint("v:/t2"))
+	fmt.Println(util.Exist("v:/useless/aaa"))
 	//fmt.Println(symbolic.GetJunctionTarget("V:/tt"));
 	//fmt.Println(symbolic.GetJunctionTarget("V:/t2"));
 	//fmt.Println(symbolic.IsJunction("v:/tt"))
