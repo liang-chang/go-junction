@@ -3,6 +3,8 @@ package util
 import (
 	"syscall"
 	//"fmt"
+	"os"
+	"path/filepath"
 )
 
 func DirectoryExist(path string) (bool, error) {
@@ -49,6 +51,25 @@ func FileExist(path string) (bool, error) {
 //调用 windows 底层函数，判断文件路径是否是个文件夹
 func getFileAttributes(path string) (attrs uint32, err error) {
 	return syscall.GetFileAttributes(syscall.StringToUTF16Ptr(path));
+}
+
+func RemoveContents(dir string) error {
+	var d *os.File
+	var err error
+	if d, err = os.Open(dir); err != nil {
+		return err
+	}
+	defer d.Close()
+	var names []string
+	if names, err = d.Readdirnames(-1); err != nil {
+		return err
+	}
+	for _, name := range names {
+		if err = os.RemoveAll(filepath.Join(dir, name)); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func cmdExec(cmdStr string, args ...string) {

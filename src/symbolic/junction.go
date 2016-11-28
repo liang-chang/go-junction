@@ -65,12 +65,10 @@ func CreateJunction(junctionPoint string, targetDir string, overwrite bool) (res
 
 	reparseDataBuffer.SubstituteNameOffset = 0
 
-	//减1是去掉最后的 \0
 	reparseDataBuffer.SubstituteNameLength = uint16((len(substituteName)) * 2 - 2)
 
 	reparseDataBuffer.PrintNameOffset = uint16(len(substituteName) * 2)
 
-	//减1是去掉最后的 \0
 	reparseDataBuffer.PrintNameLength = uint16((len(printName)) * 2 - 2)
 
 	var i int
