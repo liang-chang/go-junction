@@ -80,8 +80,18 @@ func makeDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, s
 		goto createJunction
 	}
 
+	var isReparsePoint bool
+	//如果是符号链接或者是 junction 直接删除
+	if isReparsePoint, err := util.IsReparsePoint(link); err != nil || ret {
+		if err := os.RemoveAll(link); err != nil {
+			linkConfig.MatchFolder[folderIndex] = `Error ! can not remove symbo link "` + link + `" ! ` + err.Error()
+			errCnt = 1
+			return
+		}
+	}
+
 	//如果需要备份
-	if linkConfig.Backup || conf.Config.BackupLinkFolder {
+	if !isReparsePoint&&(linkConfig.Backup || conf.Config.BackupLinkFolder) {
 		//如果之前已经有备份
 		if ret, _ := util.Exist(link + FOLDER_BACK_SUBFFIX); ret {
 			//删除现有文件夹的内容
@@ -115,13 +125,19 @@ func makeDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, s
 
 	createJunction:
 	if err := os.MkdirAll(link, os.ModePerm); err != nil {
-		symb.Target = `Error! directory "` + link + `"  create fail ! ` + err.Error()
+		linkConfig.MatchFolder[folderIndex] = ` Error! directory "` + link + `"  create fail ! ` + err.Error()
 		errCnt = 1
 		return
 	}
+	if exist, err := util.DirectoryExist(target); err != nil || !exist {
+		linkConfig.MatchFolder[folderIndex] = `Error! "` + link + `"  create failed ! target directory not exist !`
+		errCnt = 1
+		return
+	}
+
 	ret, err := symbolic.CreateJunction(link, target, true);
 	if err != nil || !ret {
-		symb.Target = `Error! "` + link + `"  create junction fail ! ` + err.Error()
+		linkConfig.MatchFolder[folderIndex] = `Error! "` + link + `"  create junction fail ! ` + err.Error()
 		errCnt = 1
 		return
 	}

@@ -1,12 +1,12 @@
 [config]
-# link文件夹重命名备份
-backupLinkFolder = false
+# normal link文件夹重命名备份
+backupLinkFolder = true
 
 # 清空备份的文件夹
-clearBackupFolder = true
+clearBackupFolder = false
 
 #当target文件不存在时，创建
-#createTargetFolder = true
+createTargetFolder = true
 
 [pathAlias]
 #build in path variable
@@ -24,21 +24,21 @@ skip=false
 target = 'v:/uselessTest/A'
 link = [
 'lf@{useless}/aaa',
-'w@{useless}/Z',
-'w@{useless}/Y',
-'w@{useless}/X',
 'w@{useless}/U',
 'w@{useless}/V',
 'w@{useless}/W',
+'w@{useless}/Z',
+'w@{useless}/Y',
+'w@{useless}/X',
 ]
 
 [[symbolic]]
 target = 'v:/uselessTest/B'
 link = [
-'w@{useless}/O',
-'w@{useless}/P',
-'w@{useless}/T',
 'w@{useless}/L',
 'w@{useless}/M',
 'w@{useless}/N',
+'w@{useless}/O',
+'w@{useless}/P',
+'w@{useless}/Q',
 ]

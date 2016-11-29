@@ -22,8 +22,7 @@ import (
 /// Creates a junction point from the specified directory to the specified target directory.
 /// Only works on NTFS.
 func CreateJunction(junctionPoint string, targetDir string, overwrite bool) (result bool, err error) {
-	targetDir, err = filepath.Abs(targetDir)
-	if err != nil {
+	if targetDir, err = filepath.Abs(targetDir); err != nil {
 		return false, err
 	}
 	var exist bool
