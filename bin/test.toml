@@ -1,6 +1,6 @@
 [config]
 # normal link文件夹重命名备份
-backupLinkFolder = true
+backupLinkFolder = false
 
 # 清空备份的文件夹
 clearBackupFolder = false
@@ -20,7 +20,7 @@ appDataLocal='{UserHome}/AppData/Local'
 QQDataHome='{UserHome}/AppData/Roaming/Tencent'
 
 [[symbolic]]
-skip=false
+skip=true
 target = 'v:/uselessTest/A'
 link = [
 'lf@{useless}/aaa',
@@ -33,12 +33,16 @@ link = [
 ]
 
 [[symbolic]]
+skip=false
 target = 'v:/uselessTest/B'
 link = [
 'w@{useless}/L',
 'w@{useless}/M',
 'w@{useless}/N',
 'w@{useless}/O',
+'wl@{useless}/OO/OO',
 'w@{useless}/P',
+'wl@{useless}/PP/PP/PP/PP/PP',
 'w@{useless}/Q',
+'wf@{useless}/QQ/QQ/QQ/QQ/QQ',
 ]

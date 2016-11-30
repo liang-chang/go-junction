@@ -76,18 +76,28 @@ func makeDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, s
 	link := linkConfig.MatchFolder[folderIndex]
 
 	//link 文件夹不存在，直接创建
+	if ret, _ := util.Exist(target); !ret {
+		linkConfig.MatchFolder[folderIndex] = `Error! "` + link + `"  create junction fail ! target directory not exist !`
+		errCnt = 1
+		return
+	}
+
+
+	var isReparsePoint = false
+
+	//link 文件夹不存在，直接创建
 	if ret, _ := util.Exist(link); !ret {
 		goto createJunction
 	}
 
-	var isReparsePoint bool
 	//如果是符号链接或者是 junction 直接删除
-	if isReparsePoint, err := util.IsReparsePoint(link); err != nil || ret {
+	if isReparsePoint, err := util.IsReparsePoint(link); err != nil || isReparsePoint {
 		if err := os.RemoveAll(link); err != nil {
 			linkConfig.MatchFolder[folderIndex] = `Error ! can not remove symbo link "` + link + `" ! ` + err.Error()
 			errCnt = 1
 			return
 		}
+		goto createJunction
 	}
 
 	//如果需要备份
@@ -121,6 +131,12 @@ func makeDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, s
 			}
 		}
 
+	} else {
+		if err := util.RemoveContents(link); err != nil {
+			linkConfig.MatchFolder[folderIndex] = `Error !  can not remove "` + link + `" content ! ` + err.Error()
+			errCnt = 1
+			return
+		}
 	}
 
 	createJunction:

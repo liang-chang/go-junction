@@ -2,15 +2,9 @@ package main
 
 import (
 	"config"
-	//"action"
-	//"strconv"
-	//"fmt"
-	//"symbolic"
 	"action"
 	"log"
 	"os"
-	"fmt"
-	"util"
 )
 
 var logger *log.Logger;
@@ -43,9 +37,9 @@ func main() {
 	//fmt.Println(util.IsReparsePoint("v:/temp"))
 	//fmt.Println(util.IsReparsePoint("v:/t1"))
 	//fmt.Println(util.IsReparsePoint("v:/t2"))
-	fmt.Println(util.Exist("v:/useless/aaa"))
-	fmt.Println(util.IsReparsePoint("v:/t1"))
-	fmt.Println(util.IsReparsePoint("v:/t2"))
+	//fmt.Println(util.Exist("v:/useless/aaa"))
+	//fmt.Println(util.IsReparsePoint("v:/t1"))
+	//fmt.Println(util.IsReparsePoint("v:/t2"))
 	//fmt.Println(symbolic.GetJunctionTarget("V:/tt"));
 	//fmt.Println(symbolic.GetJunctionTarget("V:/t2"));
 	//fmt.Println(symbolic.IsJunction("v:/tt"))

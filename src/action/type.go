@@ -10,6 +10,7 @@ var FUNC = map[string]action{
 	"list":list,
 	"check":check,
 	"make":make,
+	"recovery":recovery,
 }
 
 const FOLDER_BACK_SUBFFIX = "_junction_bak_$_$"
