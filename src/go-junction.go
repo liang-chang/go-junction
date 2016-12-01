@@ -26,7 +26,9 @@ func main() {
 
 	//ret := action.GetPatternDirectory(`E:/|\d+$|/binn`)
 
-	//fmt.Println(directory.DirectoryExist("v:/tt"))
+	//var target="V:/chrome/Default/Extensions/dhgdmnkdnhkhkpbbfldhkoekjammkfjb"
+
+	//fmt.Println(target[len(path.Dir(target))+1:])
 	//fmt.Println(directory.DirectoryExist("v:/xxxxx"))
 
 	//os.RemoveAll 可以删了作 符号链接和 junction point

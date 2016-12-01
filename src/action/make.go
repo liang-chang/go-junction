@@ -7,6 +7,8 @@ import (
 	"github.com/fatih/structs"
 	"util"
 	"symbolic"
+	"io/ioutil"
+	"path"
 )
 
 func make(conf config.Setting) {
@@ -82,7 +84,6 @@ func makeDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, s
 		return
 	}
 
-
 	var isReparsePoint = false
 
 	//link 文件夹不存在，直接创建
@@ -149,6 +150,10 @@ func makeDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, s
 		linkConfig.MatchFolder[folderIndex] = `Error! "` + link + `"  create failed ! target directory not exist !`
 		errCnt = 1
 		return
+	}
+
+	if linkConfig.Isolate {
+		target, _ = ioutil.TempDir(target, "target_" + link[len(path.Dir(link)) + 1:]+"_")
 	}
 
 	ret, err := symbolic.CreateJunction(link, target, true);
