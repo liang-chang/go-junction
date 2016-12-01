@@ -5,8 +5,6 @@ import (
 	"action"
 	"log"
 	"os"
-	"fmt"
-	"symbolic"
 )
 
 var logger *log.Logger;
