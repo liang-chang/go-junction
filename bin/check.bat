@@ -1,1 +1,2 @@
-go-junction.exe --config=test.toml --action=check
+go-junction.exe --config=config.toml --action=check
+pause

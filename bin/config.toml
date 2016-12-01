@@ -52,6 +52,11 @@ link = [
 '{QQDataHome}/Tencentdl',
 '{QQDataHome}/TXSSO/SetupLogs',
 '{QQDataHome}/Users/|\d+|/QQ/WinTemp',
+'w@{QQDataHome}/AndroidAssist',
+'w@{QQDataHome}/AndroidServer',
+'w@{QQDataHome}/WeChat/log',
+'w@{QQDataHome}/WXWork/Log',
+'w@{appDataLocal}/Tencent/MiniBrowser',
 ]
 
 [[symbolic]]
@@ -67,8 +72,11 @@ link = [
 'w@{appDataRoaming}/XMusic/log',
 'w@{appDataRoaming}/XMusic/XMusicCache',
 'w@{appDataRoaming}/XMusicServer/XMusicServerLog',
+'w@{appDataLocal}/Netease/CloudMusic/Temp',
 'w@{appDataLocal}/Youdao/YNote/log',
-'w@{appDataLocal}/KSafe/KClear/Logs'
+'w@{appDataLocal}/Youdao/YNote/Ad',
+'w@{appDataLocal}/KSafe/KClear/Logs',
+'w@{appDataRoaming}/Foxmail7',
 ]
 
 #开发工具
