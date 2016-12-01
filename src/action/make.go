@@ -9,6 +9,7 @@ import (
 	"symbolic"
 	"io/ioutil"
 	"path"
+	"strings"
 )
 
 func make(conf config.Setting) {
@@ -77,7 +78,7 @@ func makeDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, s
 
 	link := linkConfig.MatchFolder[folderIndex]
 
-	//link 文件夹不存在，直接创建
+	//target 文件夹不存在
 	if ret, _ := util.Exist(target); !ret {
 		linkConfig.MatchFolder[folderIndex] = `Error! "` + link + `"  create junction fail ! target directory not exist !`
 		errCnt = 1
@@ -91,8 +92,16 @@ func makeDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, s
 		goto createJunction
 	}
 
-	//如果是符号链接或者是 junction 直接删除
-	if isReparsePoint, err := util.IsReparsePoint(link); err != nil || isReparsePoint {
+	//如果是符号链接或者是 junction 判断是否一致
+	if isReparsePoint, _ := util.IsReparsePoint(link); isReparsePoint {
+		if oldTarget, err := symbolic.GetJunctionTarget(link); err == nil {
+			if strings.ToLower(strings.Replace(oldTarget, `\`, `/`, -1)) == strings.ToLower(target) {
+				//已有的junctoin 与 将要创建的一致，跳过
+				return
+			}
+		}
+
+		//不一致直接删除
 		if err := os.RemoveAll(link); err != nil {
 			linkConfig.MatchFolder[folderIndex] = `Error ! can not remove symbo link "` + link + `" ! ` + err.Error()
 			errCnt = 1
@@ -126,13 +135,14 @@ func makeDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, s
 
 			//重命名备命
 			if err := os.Rename(link, link + FOLDER_BACK_SUBFFIX); err != nil {
-				linkConfig.MatchFolder[folderIndex] = `Error ! backup failed ! can not rename "` + link + `" ! ` + err.Error()
+				linkConfig.MatchFolder[folderIndex] = `Error ! backup fail ! can not rename "` + link + `" ! ` + err.Error()
 				errCnt = 1
 				return
 			}
 		}
 
 	} else {
+		//不需要备份
 		if err := util.RemoveContents(link); err != nil {
 			linkConfig.MatchFolder[folderIndex] = `Error !  can not remove "` + link + `" content ! ` + err.Error()
 			errCnt = 1
@@ -147,13 +157,13 @@ func makeDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, s
 		return
 	}
 	if exist, err := util.DirectoryExist(target); err != nil || !exist {
-		linkConfig.MatchFolder[folderIndex] = `Error! "` + link + `"  create failed ! target directory not exist !`
+		linkConfig.MatchFolder[folderIndex] = `Error! "` + link + `"  create junction fail ! target directory not exist !`
 		errCnt = 1
 		return
 	}
 
 	if linkConfig.Isolate {
-		target, _ = ioutil.TempDir(target, "target_" + link[len(path.Dir(link)) + 1:]+"_")
+		target, _ = ioutil.TempDir(target, "target_" + link[len(path.Dir(link)) + 1:] + "_")
 	}
 
 	ret, err := symbolic.CreateJunction(link, target, true);

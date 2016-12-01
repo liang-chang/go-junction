@@ -71,14 +71,14 @@ func checkDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, 
 
 	ret, _ = util.IsReparsePoint(link)
 	if ret == false {
-		linkConfig.MatchFolder[folderIndex] = `Error ! "` + link + `"  not is not junction point !`
+		linkConfig.MatchFolder[folderIndex] = `Error ! "` + link + `"  is not junction point !`
 		errCnt = 1
 		return
 	}
 
 	t, err := symbolic.GetJunctionTarget(link)
 	if err != nil && t == "" {
-		linkConfig.MatchFolder[folderIndex] = `Error ! "` + link + `"  not is not junction point !`
+		linkConfig.MatchFolder[folderIndex] = `Error ! "` + link + `"  is not junction point !`
 		errCnt = 1
 		return
 	}

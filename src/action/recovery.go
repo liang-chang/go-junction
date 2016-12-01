@@ -83,7 +83,7 @@ func recoveryDoLink(target string, folderIndex int, linkConfig *config.LinkConfi
 		return
 	} else {
 		//如果是符号链接或者是 junction 直接删除
-		if isReparsePoint, err := util.IsReparsePoint(link); err != nil || isReparsePoint {
+		if isReparsePoint, _ := util.IsReparsePoint(link); isReparsePoint {
 			if err := os.RemoveAll(link); err != nil {
 				linkConfig.MatchFolder[folderIndex] = `Error ! can not remove symbo link "` + link + `" ! ` + err.Error()
 				errCnt = 1
