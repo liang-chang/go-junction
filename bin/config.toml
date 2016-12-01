@@ -54,6 +54,7 @@ link = [
 '{QQDataHome}/Tencentdl',
 '{QQDataHome}/TXSSO/SetupLogs',
 '{QQDataHome}/Users/|\d+|/QQ/WinTemp',
+'{QQDataHome}/QQ/commonf_inst',
 'w@{QQDataHome}/AndroidAssist',
 'w@{QQDataHome}/AndroidServer',
 'w@{QQDataHome}/WeChat/log',
@@ -79,18 +80,51 @@ link = [
 'w@{appDataLocal}/Youdao/YNote/Ad',
 'w@{appDataLocal}/KSafe/KClear/Logs',
 'w@{appDataRoaming}/Foxmail7',
+'w@{UserHome}/Local Settings/Application Data/Netease/CloudMusic/Temp',
 ]
 
 #开发工具
 [[symbolic]]
 target = '{useless}/D'
 link = [
+'{UserHome}/Documents/Tencent Files/All Users/QQ/Misc',
+]
+
+
+#开发工具
+[[symbolic]]
+skip=true
+target = '{useless}/E'
+link = [
 'w@E:/|eclipse.*?workspace|/.metadata/.plugins/org.eclipse.jdt.core',
 'w@E:/|eclipse.*?workspace|/.metadata/.plugins/org.eclipse.core.resources/.history',
+'w@E:/|eclipse.*?workspace|/.metadata/.plugins/org.eclipse.m2e.logback.configuration',
 ]
+
 [[symbolic]]
-target = '{useless}/E'
+target = '{useless}/F'
 link = [
 'w@C:/Users/changsheng/.IntelliJIdea15/system/caches',
 'w@C:/Users/changsheng/.IntelliJIdea15/system/log',
 ]
+
+[[symbolic]]
+target = '{useless}/G'
+link = [
+'w@C:/ProgramData/ESET/ESET NOD32 Antivirus/Updfiles',
+]
+
+[[symbolic]]
+target = '{useless}/H'
+link = [
+'w@C:/ProgramData/ESET/ESET NOD32 Antivirus/Updfiles',
+]
+
+[[symbolic]]
+target = '{useless}/I'
+link = [
+'w@{UserHome}/AppData/Local/Temp',
+'w@{UserHome}/AppData/Local/Microsoft/Terminal Server Client/Cache',
+]
+
+
