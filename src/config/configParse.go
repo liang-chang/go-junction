@@ -153,6 +153,8 @@ func readConfig() Setting {
 		os.Exit(1)
 	}
 
+	conf.ConfigFile = *configFileName
+
 	conf.Action = *actionName
 
 	return conf

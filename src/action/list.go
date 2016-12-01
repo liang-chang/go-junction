@@ -4,7 +4,6 @@ import (
 	"config"
 	"os"
 	"text/template"
-	//"github.com/fatih/structs"
 )
 
 func list(conf config.Setting) {

@@ -1,7 +1,8 @@
 package action
 
 const COMMON_TITLE = `
-Action  : {{.Action}}
+Action      : {{.Action}}
+ConfigFile  : {{.ConfigFile}}
 BackupLinkFolder  : {{.Config.BackupLinkFolder}}
 ClearBackupFolder : {{.Config.ClearBackupFolder}}
 CreateTargetFolder: {{.Config.CreateTargetFolder}}

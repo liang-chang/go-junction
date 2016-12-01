@@ -11,11 +11,13 @@ const FILE_SPLIT = "/"
 
 type Setting struct {
 	//list check create recovery
-	Action    string
+	Action     string
 
-	Config    GlobalConfig
-	PathAlias map[string]string
-	Symbolic  []Symbolic
+	ConfigFile string
+
+	Config     GlobalConfig
+	PathAlias  map[string]string
+	Symbolic   []Symbolic
 }
 
 type GlobalConfig struct {
