@@ -39,6 +39,9 @@ const IO_REPARSE_TAG_MOUNT_POINT = 0xA0000003;
 /// path in the virtual file system.
 const NonInterpretedPathPrefix = `\??\`;
 
+//unsafe.Sizeof(uint16) in bytes
+const UNINT16_SIZE = 2;
+
 //https://msdn.microsoft.com/en-us/library/ff552012.aspx
 //_REPARSE_DATA_BUFFER header
 type REPARSE_DATA_BUFFER_HEADER struct {

@@ -58,17 +58,19 @@ func CreateJunction(junctionPoint string, targetDir string, overwrite bool) (res
 	//官方文档  Mount Point Reparse Data Buffer
 	//This value is the length of the data starting at the SubstituteNameOffset field (or the size of the PathBuffer field, in bytes, plus 8).
 	//https://msdn.microsoft.com/en-us/library/cc232007.aspx
-	reparseDataBuffer.ReparseDataLength = uint16((len(substituteName) + len(printName)) * 2 + 8)
+	reparseDataBuffer.ReparseDataLength = uint16((len(substituteName) + len(printName)) * UNINT16_SIZE + 8)
 
 	reparseDataBuffer.Reserved = 0
 
 	reparseDataBuffer.SubstituteNameOffset = 0
 
-	reparseDataBuffer.SubstituteNameLength = uint16((len(substituteName)) * 2 - 2)
+	//-2 去掉尾部 \0
+	reparseDataBuffer.SubstituteNameLength = uint16((len(substituteName)) * UNINT16_SIZE - 2)
 
 	reparseDataBuffer.PrintNameOffset = uint16(len(substituteName) * 2)
 
-	reparseDataBuffer.PrintNameLength = uint16((len(printName)) * 2 - 2)
+	//-2 去掉尾部 \0
+	reparseDataBuffer.PrintNameLength = uint16((len(printName)) * UNINT16_SIZE - 2)
 
 	var i int
 	for i = 0; i < len(substituteName); i++ {

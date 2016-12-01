@@ -74,25 +74,25 @@ func openReparsePoint(reparsePoint string, accessMode uint32) (handle syscall.Ha
 }
 
 func (r *SymbolicLinkReparseBuffer) PrintName() string {
-	offset := r.PrintNameOffset / 2//微软官方文档中说要除了2
-	length := r.PrintNameLength / 2
+	offset := r.PrintNameOffset / UNINT16_SIZE
+	length := r.PrintNameLength / UNINT16_SIZE
 	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
 }
 
 func (r *SymbolicLinkReparseBuffer) SubstituteName() string {
-	offset := r.SubstituteNameOffset / 2//微软官方文档中说要除了2
-	length := r.SubstituteNameLength / 2
+	offset := r.SubstituteNameOffset / UNINT16_SIZE
+	length := r.SubstituteNameLength / UNINT16_SIZE
 	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
 }
 
 func (r *MountPointReparseBuffer) PrintName() string {
-	offset := r.PrintNameOffset / 2//微软官方文档中说要除了2
-	length := r.PrintNameLength / 2
+	offset := r.PrintNameOffset / UNINT16_SIZE
+	length := r.PrintNameLength / UNINT16_SIZE
 	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
 }
 
 func (r *MountPointReparseBuffer) SubstituteName() string {
-	offset := r.SubstituteNameOffset / 2//微软官方文档中说要除了2
-	length := r.SubstituteNameLength / 2
+	offset := r.SubstituteNameOffset / UNINT16_SIZE
+	length := r.SubstituteNameLength / UNINT16_SIZE
 	return string(utf16.Decode(r.PathBuffer[offset:offset + length]))
 }
