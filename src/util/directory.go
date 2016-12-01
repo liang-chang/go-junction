@@ -71,11 +71,3 @@ func RemoveContents(dir string) error {
 	}
 	return nil
 }
-
-func cmdExec(cmdStr string, args ...string) {
-	//cmd := exec.Command(cmdStr,args)
-	//var out bytes.Buffer
-	//cmd.Stdout = &out
-	//cmd.Run()
-	//return out.String()
-}
