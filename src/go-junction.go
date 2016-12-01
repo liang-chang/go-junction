@@ -25,12 +25,5 @@ func main() {
 
 	logger.Printf("Call action:%s ……", confSetting.Action)
 	action.Call(confSetting.Action, confSetting);
-
-	fmt.Println(symbolic.CreateJunction("v:/tt", "v:/temp", true))
-
-	fmt.Println(symbolic.GetJunctionTarget("v:/tt"))
-
-	var s = `\??\V:\TEMP`
-	fmt.Println(len(s))
 }
 
