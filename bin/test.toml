@@ -36,19 +36,19 @@ link = [
 '{QQDataHome}/QQ/AuTemp',
 '{QQDataHome}/QQ/Misc/com.tencent.advertisement',
 '{QQDataHome}/QQ/Misc/com.tencent.gamelife/QQGameLife',
-'{QQDataHome}/QQ/Misc/com.tencent.qqgame',
-'{QQDataHome}/QQ/Misc/com.tencent.qzone',
+'w@{QQDataHome}/QQ/Misc/com.tencent.qqgame',
+'w@{QQDataHome}/QQ/Misc/com.tencent.qzone',
 '{QQDataHome}/QQ/Misc/com.tencent.soso',
-'{QQDataHome}/QQ/Misc/Com.Tencent.SuperQQVip',
+'w@{QQDataHome}/QQ/Misc/com.Tencent.SuperQQVip',
 '{QQDataHome}/QQ/Misc/com.tencent.today',
 '{QQDataHome}/QQ/Misc/com.tencent.wireless',
 '{QQDataHome}/QQ/Misc/com.tencent.weather',
-'{QQDataHome}/QQ/Misc/LogoFile',
+'w@{QQDataHome}/QQ/Misc/LogoFile',
 '{QQDataHome}/QQ/Skins',
 '{QQDataHome}/QQ/STemp',
 '{QQDataHome}/QQ/temp',
 '{QQDataHome}/QQ/webkit_cache',
-'{QQDataHome}/QQMusic/Log/QzoneMusic',
+'w@{QQDataHome}/QQMusic/Log/QzoneMusic',
 '{QQDataHome}/Tencentdl',
 '{QQDataHome}/TXSSO/SetupLogs',
 '{QQDataHome}/Users/|\d+|/QQ/WinTemp',
@@ -58,6 +58,7 @@ link = [
 target = '{useless}/C'
 link = [
 'w@{appDataRoaming}/Adobe/Flash Player/AssetCache',
+'w@{appDataRoaming}/Adobe/Flash Player/NativeCache',
 'w@{appDataRoaming}/BaiduYunGuanjia/logs',
 'w@{appDataRoaming}/DiskDefrag',
 'w@{appDataRoaming}/KuGou8/log',
@@ -68,4 +69,18 @@ link = [
 'w@{appDataRoaming}/XMusicServer/XMusicServerLog',
 'w@{appDataLocal}/Youdao/YNote/log',
 'w@{appDataLocal}/KSafe/KClear/Logs'
+]
+
+#开发工具
+[[symbolic]]
+target = '{useless}/D'
+link = [
+'w@E:/|eclipse.*?workspace|/.metadata/.plugins/org.eclipse.jdt.core',
+'w@E:/|eclipse.*?workspace|/.metadata/.plugins/org.eclipse.core.resources/.history',
+]
+[[symbolic]]
+target = '{useless}/E'
+link = [
+'w@C:/Users/changsheng/.IntelliJIdea15/system/caches',
+'w@C:/Users/changsheng/.IntelliJIdea15/system/log',
 ]
