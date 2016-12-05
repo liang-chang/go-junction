@@ -87,7 +87,7 @@ link = [
 [[symbolic]]
 target = '{useless}/D'
 link = [
-'{UserHome}/Documents/Tencent Files/All Users/QQ/Misc',
+'w@{UserHome}/Documents/Tencent Files/All Users/QQ/Misc',
 ]
 
 

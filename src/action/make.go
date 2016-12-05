@@ -94,12 +94,24 @@ func makeDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, s
 
 	//如果是符号链接或者是 junction 判断是否一致
 	if isReparsePoint, _ := util.IsReparsePoint(link); isReparsePoint {
-		if oldTarget, err := symbolic.GetJunctionTarget(link); err == nil {
+		oldTarget, err := symbolic.GetJunctionTarget(link);
+
+		//开启隔离，每次肯定不一样
+		if linkConfig.Isolate {
+
+			
+
+		}else{
+
+		}
+
+		if err == nil {
 			if strings.ToLower(strings.Replace(oldTarget, `\`, `/`, -1)) == strings.ToLower(target) {
 				//已有的junctoin 与 将要创建的一致，跳过
 				return
 			}
 		}
+
 
 		//不一致直接删除
 		if err := os.RemoveAll(link); err != nil {
