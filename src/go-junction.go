@@ -5,8 +5,6 @@ import (
 	"action"
 	"log"
 	"os"
-	"fmt"
-	"symbolic"
 )
 
 var logger *log.Logger;
@@ -25,8 +23,5 @@ func main() {
 
 	logger.Printf("Call action:%s ……", confSetting.Action)
 	action.Call(confSetting.Action, confSetting);
-
-
-	fmt.Println(symbolic.CreateJunction("v:/tt", "v:/temp", true))
 }
 

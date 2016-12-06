@@ -5,6 +5,7 @@ import (
 	//"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func DirectoryExist(path string) (bool, error) {
@@ -16,6 +17,22 @@ func DirectoryExist(path string) (bool, error) {
 		return false, err
 	}
 	return attrs & syscall.FILE_ATTRIBUTE_DIRECTORY > 0, err
+}
+
+func IsSamePath(a, b string) (bool) {
+	a = strings.ToLower(strings.Replace(a, `\`, `/`, -1));
+	b = strings.ToLower(strings.Replace(b, `\`, `/`, -1));
+	return strings.Compare(a, b) == 0
+}
+
+/**
+	dir 是否是 parent 的子文件或者是相同的文件夹
+ */
+func IsSubDirectory(dir, parent string) (bool) {
+	dir = strings.ToLower(strings.Replace(dir, `\`, `/`, -1));
+	parent = strings.ToLower(strings.Replace(parent, `\`, `/`, -1))
+	ret := strings.Index(dir, parent) >= 0&&len(dir) != len(parent)
+	return ret
 }
 
 func IsReparsePoint(path string) (bool, error) {

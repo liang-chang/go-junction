@@ -9,7 +9,7 @@ import (
 	"symbolic"
 	"io/ioutil"
 	"path"
-	"strings"
+	"path/filepath"
 )
 
 func make(conf config.Setting) {
@@ -78,6 +78,8 @@ func makeDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, s
 
 	link := linkConfig.MatchFolder[folderIndex]
 
+	var msg = link
+
 	//target 文件夹不存在
 	if ret, _ := util.Exist(target); !ret {
 		linkConfig.MatchFolder[folderIndex] = `Error! "` + link + `"  create junction fail ! target directory not exist !`
@@ -86,6 +88,10 @@ func makeDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, s
 	}
 
 	var isReparsePoint = false
+
+	var ret, exist bool
+
+	var err error
 
 	//link 文件夹不存在，直接创建
 	if ret, _ := util.Exist(link); !ret {
@@ -96,28 +102,21 @@ func makeDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, s
 	if isReparsePoint, _ := util.IsReparsePoint(link); isReparsePoint {
 		oldTarget, err := symbolic.GetJunctionTarget(link);
 
-		//开启隔离，每次肯定不一样
 		if linkConfig.Isolate {
-
-			
-
-		}else{
-
+			oldTarget, _ = filepath.Abs(filepath.Dir(oldTarget))
 		}
 
 		if err == nil {
-			if strings.ToLower(strings.Replace(oldTarget, `\`, `/`, -1)) == strings.ToLower(target) {
+			if util.IsSamePath(oldTarget, target) {
 				//已有的junctoin 与 将要创建的一致，跳过
 				return
 			}
 		}
 
-
 		//不一致直接删除
-		if err := os.RemoveAll(link); err != nil {
-			linkConfig.MatchFolder[folderIndex] = `Error ! can not remove symbo link "` + link + `" ! ` + err.Error()
-			errCnt = 1
-			return
+		if err = os.RemoveAll(link); err != nil {
+			msg = `Error ! can not remove symbo link "` + link + `" ! ` + err.Error()
+			goto setErrorText
 		}
 		goto createJunction
 	}
@@ -125,12 +124,11 @@ func makeDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, s
 	//如果需要备份
 	if !isReparsePoint&&(linkConfig.Backup || conf.Config.BackupLinkFolder) {
 		//如果之前已经有备份
-		if ret, _ := util.Exist(link + FOLDER_BACK_SUBFFIX); ret {
+		if ret, _ = util.Exist(link + FOLDER_BACK_SUBFFIX); ret {
 			//删除现有文件夹的内容
 			if err := util.RemoveContents(link); err != nil {
-				linkConfig.MatchFolder[folderIndex] = `Error !  can not remove "` + link + `" content ! ` + err.Error()
-				errCnt = 1
-				return
+				msg = `Error !  can not remove "` + link + `" content ! ` + err.Error()
+				goto setErrorText
 			}
 			goto createJunction
 		} else {
@@ -138,53 +136,53 @@ func makeDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, s
 
 			//如果需要删除备份文件夹的内容
 			if linkConfig.Clear || conf.Config.ClearBackupFolder {
-				if err := util.RemoveContents(link); err != nil {
-					linkConfig.MatchFolder[folderIndex] = `Error !  can not remove "` + link + `" content ! ` + err.Error()
-					errCnt = 1
-					return
+				if err = util.RemoveContents(link); err != nil {
+					msg = `Error !  can not remove "` + link + `" content ! ` + err.Error()
+					goto setErrorText
 				}
 			}
 
 			//重命名备命
-			if err := os.Rename(link, link + FOLDER_BACK_SUBFFIX); err != nil {
-				linkConfig.MatchFolder[folderIndex] = `Error ! backup fail ! can not rename "` + link + `" ! ` + err.Error()
-				errCnt = 1
-				return
+			if err = os.Rename(link, link + FOLDER_BACK_SUBFFIX); err != nil {
+				msg = `Error ! backup fail ! can not rename "` + link + `" ! ` + err.Error()
+				goto setErrorText
 			}
 		}
 
 	} else {
 		//不需要备份
-		if err := util.RemoveContents(link); err != nil {
-			linkConfig.MatchFolder[folderIndex] = `Error !  can not remove "` + link + `" content ! ` + err.Error()
-			errCnt = 1
-			return
+		if err = util.RemoveContents(link); err != nil {
+			msg = `Error !  can not remove "` + link + `" content ! ` + err.Error()
+			goto setErrorText
 		}
 	}
 
 	createJunction:
-	if err := os.MkdirAll(link, os.ModePerm); err != nil {
-		linkConfig.MatchFolder[folderIndex] = ` Error! directory "` + link + `"  create fail ! ` + err.Error()
-		errCnt = 1
-		return
+	if err = os.MkdirAll(link, os.ModePerm); err != nil {
+		msg = ` Error! directory "` + link + `"  create fail ! ` + err.Error()
+		goto setErrorText
 	}
-	if exist, err := util.DirectoryExist(target); err != nil || !exist {
-		linkConfig.MatchFolder[folderIndex] = `Error! "` + link + `"  create junction fail ! target directory not exist !`
-		errCnt = 1
-		return
+	if exist, err = util.DirectoryExist(target); err != nil || !exist {
+		msg = `Error! "` + link + `"  create junction fail ! target directory not exist !`
+		goto setErrorText
 	}
 
 	if linkConfig.Isolate {
 		target, _ = ioutil.TempDir(target, "target_" + link[len(path.Dir(link)) + 1:] + "_")
 	}
 
-	ret, err := symbolic.CreateJunction(link, target, true);
+	ret, err = symbolic.CreateJunction(link, target, true);
 	if err != nil || !ret {
-		linkConfig.MatchFolder[folderIndex] = `Error! "` + link + `"  create junction fail ! ` + err.Error()
-		errCnt = 1
-		return
+		msg = `Error! "` + link + `"  create junction fail ! ` + err.Error()
+		goto setErrorText
 	}
 
+	linkConfig.MatchFolder[folderIndex] = msg
+	return
+
+	setErrorText:
+	linkConfig.MatchFolder[folderIndex] = msg
+	errCnt = 1
 	return
 }
 

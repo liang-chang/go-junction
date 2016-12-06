@@ -7,7 +7,6 @@ import (
 	"github.com/fatih/structs"
 	"util"
 	"symbolic"
-	"strings"
 )
 
 func check(conf config.Setting) {
@@ -49,47 +48,60 @@ func checkDoTarget(target string, symbolic *config.Symbolic, conf *config.Settin
 	return
 }
 
-func checkDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, symb *config.Symbolic, conf *config.Setting) (errCnt, warnCnt int) {
-	if folderIndex == -1 {
+func checkDoLink(target string, index int, linkConf *config.LinkConfig, symb *config.Symbolic, conf *config.Setting) (errCnt, warnCnt int) {
+	if index == -1 {
 		var warnText = ""
-		if !linkConfig.WarnIgnore {
+		if !linkConf.WarnIgnore {
 			warnCnt++
 			warnText = "Warning !"
 		}
-		linkConfig.MatchFolder = append(linkConfig.MatchFolder, warnText + " No directory match !")
+		linkConf.MatchFolder = append(linkConf.MatchFolder, warnText + " No directory match !")
 		return
 	}
 
-	link := linkConfig.MatchFolder[folderIndex]
+	link := linkConf.MatchFolder[index]
 	var ret bool
+	var msg = link
+	var oldRealTarget string
+
 	ret, _ = util.Exist(link)
 	if ret == false {
-		linkConfig.MatchFolder[folderIndex] = `Error ! "` + link + `" not exist !`
-		errCnt = 1
-		return
+		msg = `Error ! "` + link + `" not exist !`
+		goto setErrorText
 	}
 
 	ret, _ = util.IsReparsePoint(link)
 	if ret == false {
-		linkConfig.MatchFolder[folderIndex] = `Error ! "` + link + `"  is not junction point !`
-		errCnt = 1
-		return
+		msg = `Error ! "` + link + `"  is not junction point !`
+		goto setErrorText
 	}
 
-	t, err := symbolic.GetJunctionTarget(link)
-	if err != nil && t == "" {
-		linkConfig.MatchFolder[folderIndex] = `Error ! "` + link + `"  is not junction point !`
-		errCnt = 1
-		return
+	oldRealTarget, _ = symbolic.GetJunctionTarget(link)
+
+	if oldRealTarget == "" {
+		msg = `Error ! "` + link + `"  is not junction point !`
+		goto setErrorText
 	}
 
-	t = strings.Replace(strings.ToLower(t), `\`, "/", -1)
-	if t != strings.ToLower(target) {
-		linkConfig.MatchFolder[folderIndex] = `Error ! "` + link + `"  link to : ` + t
-		errCnt = 1
-		return
+	if linkConf.Isolate {
+		if !util.IsSubDirectory(oldRealTarget, target) {
+			msg = `Error ! "` + link + `"  link to : ` + oldRealTarget
+			goto setErrorText
+		}
+
+	} else {
+		if !util.IsSamePath(oldRealTarget, target) {
+			msg = `Error ! "` + link + `"  link to : ` + oldRealTarget
+			goto setErrorText
+		}
 	}
 
+	linkConf.MatchFolder[index] = msg
+	return
+
+	setErrorText:
+	linkConf.MatchFolder[index] = msg
+	errCnt = 1
 	return
 }
 
