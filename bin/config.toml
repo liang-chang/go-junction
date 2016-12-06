@@ -93,8 +93,8 @@ link = [
 
 #开发工具
 [[symbolic]]
-skip=false
-target = '{useless}/Z'
+skip=true
+target = '{useless}/E'
 link = [
 'w@E:/|eclipse.*?workspace|/.metadata/.plugins/org.eclipse.jdt.core',
 'w@E:/|eclipse.*?workspace|/.metadata/.plugins/org.eclipse.core.resources/.history',
