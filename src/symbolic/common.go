@@ -6,11 +6,8 @@ package symbolic
 
 import (
 	"syscall"
-	//"encoding/binary"
-	//"bytes"
 	"unsafe"
 	"strings"
-	//"errors"
 	"unicode/utf16"
 )
 
@@ -45,13 +42,10 @@ func getReparseTarget(handle syscall.Handle) (target string, reparseType int, er
 			symbolicLink = (*SymbolicLinkReparseBuffer)(unsafe.Pointer(&outBuffer))
 
 			target = symbolicLink.SubstituteName()
-			reparseType = int(outBuffer.ReparseTag)
-
 		} else if outBuffer.ReparseTag == IO_REPARSE_TAG_MOUNT_POINT {
-
 			target = outBuffer.SubstituteName();
-			reparseType = int(outBuffer.ReparseTag)
 		}
+		reparseType = int(outBuffer.ReparseTag)
 		if (strings.HasPrefix(target, NonInterpretedPathPrefix)) {
 			target = target[len(NonInterpretedPathPrefix):]
 		}

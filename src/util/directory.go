@@ -2,7 +2,6 @@ package util
 
 import (
 	"syscall"
-	//"fmt"
 	"os"
 	"path/filepath"
 	"strings"

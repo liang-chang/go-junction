@@ -5,12 +5,9 @@ package symbolic
 //https://github.com/golang/go/blob/master/src/os/os_windows_test.go
 
 import (
-	//	"util"
 	"os"
 	"syscall"
 	"path/filepath"
-	//"encoding/binary"
-	//"bytes"
 	"unsafe"
 	"errors"
 	"util"

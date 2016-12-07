@@ -1,19 +1,11 @@
 package action
 
 import (
-//"util"
-//"config"
-//"os"
-//"fmt"
-////"junction"
-////"syscall"
-//"symbolic"
-)
-import (
 	"config"
 	"log"
 	"os"
 )
+
 
 func Call(actionName string, conf config.Setting) {
 	var fun action

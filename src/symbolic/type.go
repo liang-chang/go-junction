@@ -5,8 +5,6 @@ package symbolic
 //https://msdn.microsoft.com/en-us/library/aa363940.aspx
 
 //https://msdn.microsoft.com/en-us/library/cc232006.aspx
-//https://gist.github.com/Perlmint/f9f0e37db163dd69317d
-//https://github.com/golang/go/blob/master/src/os/os_windows_test.go
 
 /// The file or directory is not a reparse point.
 const ERROR_NOT_A_REPARSE_POINT = 4390;
