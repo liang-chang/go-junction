@@ -159,7 +159,7 @@ func makeDoLink(target string, folderIndex int, linkConfig *config.LinkConfig, s
 
 	createJunction:
 	if err = os.MkdirAll(link, os.ModePerm); err != nil {
-		msg = ` Error! directory "` + link + `"  create fail ! ` + err.Error()
+		msg = `Error! directory "` + link + `"  create fail ! ` + err.Error()
 		goto setErrorText
 	}
 	if exist, err = util.DirectoryExist(target); err != nil || !exist {
