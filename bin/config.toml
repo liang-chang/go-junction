@@ -125,6 +125,8 @@ target = '{useless}/I'
 link = [
 'w@{UserHome}/AppData/Local/Temp',
 'w@{UserHome}/AppData/Local/Microsoft/Terminal Server Client/Cache',
+'w@{UserHome}/AppData/Roaming/AVAST Software/Avast/Cache',
+'w@{UserHome}/AppData/Roaming/AVAST Software/Avast/log',
 ]
 
 
