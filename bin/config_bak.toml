@@ -1,0 +1,132 @@
+[config]
+# link文件夹重命名备份
+backupLinkFolder = false
+
+# 清空备份的文件夹
+clearBackupFolder = true
+
+#当target文件不存在时，创建
+createTargetFolder = true
+
+[pathAlias]
+#build in path variable
+# UserHome
+# Temp
+useless='V:/useless'
+chromeCache='V:/chrome_cache'
+firefoxCache='V:/firefox_cache'
+appDataRoaming='{UserHome}/AppData/Roaming'
+appDataLocal='{UserHome}/AppData/Local'
+QQDataHome='{UserHome}/AppData/Roaming/Tencent'
+
+[[symbolic]]
+target = '{useless}/A'
+link = [
+'w@{UserHome}/logs',
+'w@{UserHome}/diamond/logs',
+'w@{UserHome}/.dubbo',
+'w@{UserHome}/.WebIde70/system/log',
+'w@{UserHome}/.WebStorm7/system/log',
+]
+
+[[symbolic]]
+target = '{useless}/B'
+link = [
+'{QQDataHome}/Logs',
+'{QQDataHome}/QQ/AuTemp',
+'{QQDataHome}/QQ/Misc/com.tencent.advertisement',
+'{QQDataHome}/QQ/Misc/com.tencent.gamelife',
+'w@{QQDataHome}/QQ/Misc/com.tencent.qqgame',
+'w@{QQDataHome}/QQ/Misc/com.tencent.qzone',
+'{QQDataHome}/QQ/Misc/com.tencent.soso',
+'w@{QQDataHome}/QQ/Misc/com.Tencent.SuperQQVip',
+'w@{QQDataHome}/QQ/Misc/com.tencent.dingdong',
+'w@{QQDataHome}/QQ/Misc/com.Tencent.QQVip',
+'{QQDataHome}/QQ/Misc/com.tencent.today',
+'{QQDataHome}/QQ/Misc/com.tencent.wireless',
+'{QQDataHome}/QQ/Misc/com.tencent.weather',
+'w@{QQDataHome}/QQ/Misc/LogoFile',
+'{QQDataHome}/QQ/Skins',
+'{QQDataHome}/QQ/STemp',
+'{QQDataHome}/QQ/temp',
+'{QQDataHome}/QQ/webkit_cache',
+'w@{QQDataHome}/QQMusic/Log/QzoneMusic',
+'{QQDataHome}/Tencentdl',
+'{QQDataHome}/TXSSO/SetupLogs',
+'{QQDataHome}/Users/|\d+|/QQ/WinTemp',
+'{QQDataHome}/QQ/commonf_inst',
+'w@{QQDataHome}/AndroidAssist',
+'w@{QQDataHome}/AndroidServer',
+'w@{QQDataHome}/WeChat/log',
+'w@{QQDataHome}/WXWork/Log',
+'w@{appDataLocal}/Tencent/MiniBrowser',
+]
+
+[[symbolic]]
+target = '{useless}/C'
+link = [
+'w@{appDataRoaming}/Adobe/Flash Player/AssetCache',
+'w@{appDataRoaming}/Adobe/Flash Player/NativeCache',
+'w@{appDataRoaming}/BaiduYunGuanjia/logs',
+'w@{appDataRoaming}/DiskDefrag',
+'w@{appDataRoaming}/KuGou8/log',
+'w@{appDataRoaming}/Macromedia/Flash Player',
+'w@{appDataRoaming}/Unified Remote/Logs',
+'w@{appDataRoaming}/XMusic/log',
+'w@{appDataRoaming}/XMusic/XMusicCache',
+'w@{appDataRoaming}/XMusicServer/XMusicServerLog',
+'w@{appDataLocal}/Netease/CloudMusic/Temp',
+'w@{appDataLocal}/Youdao/YNote/log',
+'w@{appDataLocal}/Youdao/YNote/Ad',
+'w@{appDataLocal}/KSafe/KClear/Logs',
+'w@{appDataRoaming}/Foxmail7',
+'w@{UserHome}/Local Settings/Application Data/Netease/CloudMusic/Temp',
+]
+
+#开发工具
+[[symbolic]]
+target = '{useless}/D'
+link = [
+'w@{UserHome}/Documents/Tencent Files/All Users/QQ/Misc',
+]
+
+
+#开发工具
+[[symbolic]]
+skip=true
+target = '{useless}/E'
+link = [
+'w@E:/|eclipse.*?workspace|/.metadata/.plugins/org.eclipse.jdt.core',
+'w@E:/|eclipse.*?workspace|/.metadata/.plugins/org.eclipse.core.resources/.history',
+'w@E:/|eclipse.*?workspace|/.metadata/.plugins/org.eclipse.m2e.logback.configuration',
+]
+
+[[symbolic]]
+target = '{useless}/F'
+link = [
+'w@C:/Users/changsheng/.IntelliJIdea15/system/caches',
+'w@C:/Users/changsheng/.IntelliJIdea15/system/log',
+]
+
+[[symbolic]]
+target = '{useless}/G'
+link = [
+'w@C:/ProgramData/ESET/ESET NOD32 Antivirus/Updfiles',
+]
+
+[[symbolic]]
+target = '{useless}/H'
+link = [
+'w@C:/ProgramData/ESET/ESET NOD32 Antivirus/Updfiles',
+]
+
+[[symbolic]]
+target = '{useless}/I'
+link = [
+'w@{UserHome}/AppData/Local/Temp',
+'w@{UserHome}/AppData/Local/Microsoft/Terminal Server Client/Cache',
+'w@{UserHome}/AppData/Roaming/AVAST Software/Avast/Cache',
+'w@{UserHome}/AppData/Roaming/AVAST Software/Avast/log',
+]
+
+
