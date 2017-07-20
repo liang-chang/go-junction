@@ -1,0 +1,31 @@
+[config]
+# link文件夹重命名备份
+backupLinkFolder = false
+
+# 清空备份的文件夹
+clearBackupFolder = true
+
+#当target文件不存在时，创建
+createTargetFolder = true
+
+[pathAlias]
+#build in path variable
+# UserHome
+# Temp
+useless='V:/useless'
+chromeCache='V:/chrome_cache'
+firefoxCache='V:/firefox_cache'
+appDataRoaming='{UserHome}/AppData/Roaming'
+appDataLocal='{UserHome}/AppData/Local'
+QQDataHome='{UserHome}/AppData/Roaming/Tencent'
+
+[[symbolic]]
+target = '{useless}/I'
+link = [
+'w@{UserHome}/AppData/Local/Temp',
+'w@{UserHome}/AppData/Local/Microsoft/Terminal Server Client/Cache',
+'w@{UserHome}/AppData/Roaming/AVAST Software/Avast/Cache',
+'w@{UserHome}/AppData/Roaming/AVAST Software/Avast/log',
+]
+
+

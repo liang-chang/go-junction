@@ -129,4 +129,14 @@ link = [
 'w@{UserHome}/AppData/Roaming/AVAST Software/Avast/log',
 ]
 
+[[symbolic]]
+target = '{useless}/J'
+link = [
+'w@{UserHome}/.IntelliJIdea15/system/caches',
+'w@{UserHome}/.IntelliJIdea15/system/compiler',
+'w@{UserHome}/.IntelliJIdea15/system/compile-server',
+'w@{UserHome}/.IntelliJIdea15/system/index',
+'w@{UserHome}/.IntelliJIdea15/system/log',
+'w@{UserHome}/.IntelliJIdea15/system/tmp',
+]
 
