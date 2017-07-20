@@ -8,6 +8,8 @@ clearBackupFolder = true
 #当target文件不存在时，创建
 createTargetFolder = true
 
+
+
 [pathAlias]
 #build in path variable
 # UserHome

@@ -5,14 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
-	"log"
 )
-
-var logger *log.Logger;
-
-func init() {
-	logger = log.New(os.Stdout, "", log.Ltime)
-}
 
 func DirectoryExist(path string) (bool, error) {
 	attrs, err := getFileAttributes(path)
@@ -95,8 +88,25 @@ func RemoveContents(dir string) error {
 }
 
 func getMatchDirectory(pattern string) {
-	files,_ := filepath.Glob(pattern)
-	for _,name :=range files {
-		logger.Print(name)
-	}
+	ret := make([]string, 5, 10)
+
+	ret, _ = filepath.Glob(pattern)
+
+	logger.log(ret)
+
+	//filepath.Walk(pattern, func(path string, info os.FileInfo, err error) error {
+	//	if err != nil {
+	//		logger.log(err)
+	//		return err
+	//	}
+	//	if info.IsDir() {
+	//		ret = append(ret, info.Name())
+	//	}
+	//	return err
+	//})
+	//logger.log(ret)
+	//files,_ := filepath.Glob(pattern)
+	//for _,name :=range files {
+	//	logger.Print(name)
+	//}
 }

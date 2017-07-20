@@ -8,11 +8,19 @@ clearBackupFolder = true
 #当target文件不存在时，创建
 createTargetFolder = true
 
+#当target文件自动分配
+targetFolders=[
+'V:/useless/*',
+''
+
+]
+
+
 [pathAlias]
 #build in path variable
 # UserHome
 # Temp
-useless='V:/useless/**'
+useless='V:/useless/'
 chromeCache='V:/chrome_cache'
 firefoxCache='V:/firefox_cache'
 appDataRoaming='{UserHome}/AppData/Roaming'
