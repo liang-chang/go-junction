@@ -1,72 +1,71 @@
 package util
 
 import (
-	"syscall"
 	"os"
 	"path/filepath"
 	"strings"
+	"syscall"
 )
 
 func DirectoryExist(path string) (bool, error) {
-	attrs, err := getFileAttributes(path);
+	attrs, err := getFileAttributes(path)
 	if err != nil {
 		if err == syscall.ERROR_FILE_NOT_FOUND {
 			return false, nil
 		}
 		return false, err
 	}
-	return attrs & syscall.FILE_ATTRIBUTE_DIRECTORY > 0, err
+	return attrs&syscall.FILE_ATTRIBUTE_DIRECTORY > 0, err
 }
 
-func IsSamePath(a, b string) (bool) {
-	a = strings.ToLower(strings.Replace(a, `\`, `/`, -1));
-	b = strings.ToLower(strings.Replace(b, `\`, `/`, -1));
+func IsSamePath(a, b string) bool {
+	a = strings.ToLower(strings.Replace(a, `\`, `/`, -1))
+	b = strings.ToLower(strings.Replace(b, `\`, `/`, -1))
 	return strings.Compare(a, b) == 0
 }
 
 /**
-	dir 是否是 parent 的子文件或者是相同的文件夹
- */
-func IsSubDirectory(dir, parent string) (bool) {
-	dir = strings.ToLower(strings.Replace(dir, `\`, `/`, -1));
+dir 是否是 parent 的子文件或者是相同的文件夹
+*/
+func IsSubDirectory(dir, parent string) bool {
+	dir = strings.ToLower(strings.Replace(dir, `\`, `/`, -1))
 	parent = strings.ToLower(strings.Replace(parent, `\`, `/`, -1))
-	ret := strings.Index(dir, parent) >= 0&&len(dir) != len(parent)
+	ret := strings.Index(dir, parent) >= 0 && len(dir) != len(parent)
 	return ret
 }
 
 func IsReparsePoint(path string) (bool, error) {
-	attrs, err := getFileAttributes(path);
+	attrs, err := getFileAttributes(path)
 	if err != nil {
 		if err == syscall.ERROR_FILE_NOT_FOUND {
 			return false, nil
 		}
 		return false, err
 	}
-	return attrs & syscall.FILE_ATTRIBUTE_REPARSE_POINT > 0, err
+	return attrs&syscall.FILE_ATTRIBUTE_REPARSE_POINT > 0, err
 }
 
 func Exist(path string) (bool, error) {
-	attrs, err := getFileAttributes(path);
+	attrs, err := getFileAttributes(path)
 	if err != nil {
 		return false, err
 	}
 
-	return (attrs & syscall.FILE_ATTRIBUTE_DIRECTORY > 0) || (attrs & syscall.FILE_ATTRIBUTE_DIRECTORY == 0), err
+	return (attrs&syscall.FILE_ATTRIBUTE_DIRECTORY > 0) || (attrs&syscall.FILE_ATTRIBUTE_DIRECTORY == 0), err
 }
 
 func FileExist(path string) (bool, error) {
-	attrs, err := getFileAttributes(path);
+	attrs, err := getFileAttributes(path)
 	if err != nil {
 		return false, err
 	}
 
-	return attrs & syscall.FILE_ATTRIBUTE_DIRECTORY == 0, err
+	return attrs&syscall.FILE_ATTRIBUTE_DIRECTORY == 0, err
 }
-
 
 //调用 windows 底层函数，判断文件路径是否是个文件夹
 func getFileAttributes(path string) (attrs uint32, err error) {
-	return syscall.GetFileAttributes(syscall.StringToUTF16Ptr(path));
+	return syscall.GetFileAttributes(syscall.StringToUTF16Ptr(path))
 }
 
 func RemoveContents(dir string) error {
@@ -86,4 +85,28 @@ func RemoveContents(dir string) error {
 		}
 	}
 	return nil
+}
+
+func getMatchDirectory(pattern string) {
+	ret := make([]string, 5, 10)
+
+	ret, _ = filepath.Glob(pattern)
+
+	logger.log(ret)
+
+	//filepath.Walk(pattern, func(path string, info os.FileInfo, err error) error {
+	//	if err != nil {
+	//		logger.log(err)
+	//		return err
+	//	}
+	//	if info.IsDir() {
+	//		ret = append(ret, info.Name())
+	//	}
+	//	return err
+	//})
+	//logger.log(ret)
+	//files,_ := filepath.Glob(pattern)
+	//for _,name :=range files {
+	//	logger.Print(name)
+	//}
 }

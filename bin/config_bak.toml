@@ -8,8 +8,6 @@ clearBackupFolder = true
 #当target文件不存在时，创建
 createTargetFolder = true
 
-
-
 [pathAlias]
 #build in path variable
 # UserHome
@@ -37,11 +35,13 @@ link = [
 '{QQDataHome}/Logs',
 '{QQDataHome}/QQ/AuTemp',
 '{QQDataHome}/QQ/Misc/com.tencent.advertisement',
-'{QQDataHome}/QQ/Misc/com.tencent.gamelife/QQGameLife',
+'{QQDataHome}/QQ/Misc/com.tencent.gamelife',
 'w@{QQDataHome}/QQ/Misc/com.tencent.qqgame',
 'w@{QQDataHome}/QQ/Misc/com.tencent.qzone',
 '{QQDataHome}/QQ/Misc/com.tencent.soso',
 'w@{QQDataHome}/QQ/Misc/com.Tencent.SuperQQVip',
+'w@{QQDataHome}/QQ/Misc/com.tencent.dingdong',
+'w@{QQDataHome}/QQ/Misc/com.Tencent.QQVip',
 '{QQDataHome}/QQ/Misc/com.tencent.today',
 '{QQDataHome}/QQ/Misc/com.tencent.wireless',
 '{QQDataHome}/QQ/Misc/com.tencent.weather',
@@ -54,6 +54,12 @@ link = [
 '{QQDataHome}/Tencentdl',
 '{QQDataHome}/TXSSO/SetupLogs',
 '{QQDataHome}/Users/|\d+|/QQ/WinTemp',
+'{QQDataHome}/QQ/commonf_inst',
+'w@{QQDataHome}/AndroidAssist',
+'w@{QQDataHome}/AndroidServer',
+'w@{QQDataHome}/WeChat/log',
+'w@{QQDataHome}/WXWork/Log',
+'w@{appDataLocal}/Tencent/MiniBrowser',
 ]
 
 [[symbolic]]
@@ -69,20 +75,58 @@ link = [
 'w@{appDataRoaming}/XMusic/log',
 'w@{appDataRoaming}/XMusic/XMusicCache',
 'w@{appDataRoaming}/XMusicServer/XMusicServerLog',
+'w@{appDataLocal}/Netease/CloudMusic/Temp',
 'w@{appDataLocal}/Youdao/YNote/log',
-'w@{appDataLocal}/KSafe/KClear/Logs'
+'w@{appDataLocal}/Youdao/YNote/Ad',
+'w@{appDataLocal}/KSafe/KClear/Logs',
+'w@{appDataRoaming}/Foxmail7',
+'w@{UserHome}/Local Settings/Application Data/Netease/CloudMusic/Temp',
 ]
 
 #开发工具
 [[symbolic]]
 target = '{useless}/D'
 link = [
-'w@E:/|eclipse.*?workspace|/.metadata/.plugins/org.eclipse.jdt.core',
-'w@E:/|eclipse.*?workspace|/.metadata/.plugins/org.eclipse.core.resources/.history',
+'w@{UserHome}/Documents/Tencent Files/All Users/QQ/Misc',
 ]
+
+
+#开发工具
 [[symbolic]]
+skip=true
 target = '{useless}/E'
 link = [
-'w@{UserHome}/.IntelliJIdea15/system/caches',
-'w@{UserHome}/.IntelliJIdea15/system/log',
+'w@E:/|eclipse.*?workspace|/.metadata/.plugins/org.eclipse.jdt.core',
+'w@E:/|eclipse.*?workspace|/.metadata/.plugins/org.eclipse.core.resources/.history',
+'w@E:/|eclipse.*?workspace|/.metadata/.plugins/org.eclipse.m2e.logback.configuration',
 ]
+
+[[symbolic]]
+target = '{useless}/F'
+link = [
+'w@C:/Users/changsheng/.IntelliJIdea15/system/caches',
+'w@C:/Users/changsheng/.IntelliJIdea15/system/log',
+]
+
+[[symbolic]]
+target = '{useless}/G'
+link = [
+'w@C:/ProgramData/ESET/ESET NOD32 Antivirus/Updfiles',
+]
+
+[[symbolic]]
+target = '{useless}/H'
+link = [
+'w@C:/ProgramData/ESET/ESET NOD32 Antivirus/Updfiles',
+]
+
+[[symbolic]]
+target = '{useless}/I'
+link = [
+'w@{UserHome}/AppData/Local/Temp',
+'w@{UserHome}/AppData/Local/Microsoft/Terminal Server Client/Cache',
+'w@{UserHome}/AppData/Roaming/AVAST Software/Avast/Cache',
+'w@{UserHome}/AppData/Roaming/AVAST Software/Avast/log',
+]
+
+
