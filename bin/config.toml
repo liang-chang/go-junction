@@ -10,11 +10,8 @@ createTargetFolder = true
 
 #当target文件自动分配
 targetFolders=[
-'V:/useless/*',
-''
-
+'v:/useless/Z/Z[0-9]',
 ]
-
 
 [pathAlias]
 #build in path variable
@@ -28,7 +25,7 @@ appDataLocal='{UserHome}/AppData/Local'
 QQDataHome='{UserHome}/AppData/Roaming/Tencent'
 
 [[symbolic]]
-target = '{useless}/A'
+target = '@'
 link = [
-'filw@v:/|logs?|/tt',
+'filw@v:/|log.|/tt',
 ]
