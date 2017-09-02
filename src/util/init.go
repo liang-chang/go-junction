@@ -12,5 +12,5 @@ func init() {
 }
 
 func Log(i ...interface{}) {
-	Log(i)
+	logger.Print(i)
 }
