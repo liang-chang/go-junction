@@ -87,26 +87,20 @@ func RemoveContents(dir string) error {
 	return nil
 }
 
-func getMatchDirectory(pattern string) {
-	ret := make([]string, 5, 10)
+func getMatchDirectory(pattern string) (dirs []string, err error) {
+	fils, err := filepath.Glob(pattern)
 
-	ret, _ = filepath.Glob(pattern)
+	if err != nil {
+		return make([]string, 0, 0), err
+	}
 
-	logger.log(ret)
+	ret := make([]string, 0, len(fils))
+	for _, v := range fils {
+		info, _ := os.Stat(v)
+		if info.IsDir() {
+			ret = append(ret, v)
+		}
+	}
 
-	//filepath.Walk(pattern, func(path string, info os.FileInfo, err error) error {
-	//	if err != nil {
-	//		logger.log(err)
-	//		return err
-	//	}
-	//	if info.IsDir() {
-	//		ret = append(ret, info.Name())
-	//	}
-	//	return err
-	//})
-	//logger.log(ret)
-	//files,_ := filepath.Glob(pattern)
-	//for _,name :=range files {
-	//	logger.Print(name)
-	//}
+	return ret, err
 }

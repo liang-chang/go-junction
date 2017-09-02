@@ -2,15 +2,16 @@ package config
 
 import (
 	"flag"
-	"github.com/BurntSushi/toml"
 	"log"
 	"os"
-	"path/filepath"
-	"util"
-	"syscall"
-	"strings"
 	"os/user"
+	"path/filepath"
 	"regexp"
+	"strings"
+	"syscall"
+	"util"
+
+	"github.com/BurntSushi/toml"
 )
 
 const (
@@ -31,8 +32,8 @@ const (
 )
 
 /*
-     读取配置文件，并进行配置的解读；进行 path alias 的替换
- */
+   读取配置文件，并进行配置的解读；进行 path alias 的替换
+*/
 func Read() Setting {
 	conf := readConfig()
 	setBuildInPathAlias(&conf)
@@ -91,7 +92,7 @@ func readLinkText(linkText string, pathAlias map[string]string) LinkConfig {
 		split = split[1:]
 	}
 
-	ret.FolderPattern = resolvePathAlias(split[0], pathAlias);
+	ret.FolderPattern = resolvePathAlias(split[0], pathAlias)
 	return ret
 }
 
@@ -126,10 +127,10 @@ func readConfig() Setting {
 
 	var configFileName = flag.String(configParamName, configFileDefaultName, configUsageText)
 
-	flag.Parse();
+	flag.Parse()
 
 	//设置工作目录
-	workDirPtr, _ := syscall.UTF16PtrFromString(filepath.Dir(os.Args[0]));
+	workDirPtr, _ := syscall.UTF16PtrFromString(filepath.Dir(os.Args[0]))
 	syscall.SetCurrentDirectory(workDirPtr)
 
 	configExist, _ := util.FileExist(*configFileName)
