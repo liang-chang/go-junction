@@ -27,5 +27,11 @@ QQDataHome='{UserHome}/AppData/Roaming/Tencent'
 [[symbolic]]
 target = '{useless}/Z'
 link = [
-'filw@v:/|log.|/tt',
+'fil@v:/|log.|/tt',
+]
+
+[[symbolic]]
+target = '<auto>'
+link = [
+'bcilf@v:/|log.|/tt',
 ]
