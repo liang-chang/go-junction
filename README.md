@@ -84,10 +84,22 @@ character-range:
     '\\' c      匹配字符c
     lo '-' hi   匹配区间[lo, hi]内的字符
     
-详细见 filepath.match 的单元测试
-[https://golang.org/src/path/filepath/match_test.go](https://golang.org/src/path/filepath/match_test.go)
 </pre>
+详细见 filepath.match 的单元测试结果
 
+[https://golang.org/src/path/filepath/match_test.go](https://golang.org/src/path/filepath/match_test.go)
+
+
+## pathAlias
+内置两个变量 UserHome 和 Temp 
+
+win7 下<br>
+UserHome=C:\Users\yourName\
+
+支持变量嵌套，即<br>
+a='c:/'<br>
+b='{a}/c'<br>
+也是可以的
 
 ## target 配置 
 target = '{useless}/Z'<br/>

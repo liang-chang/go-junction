@@ -3,9 +3,10 @@ package config
 import (
 	"flag"
 	"os"
-	"path/filepath"
 	"testing"
 	"util"
+	"path/filepath"
+	"io/ioutil"
 )
 
 func TestReadConfig(t *testing.T) {
@@ -22,6 +23,9 @@ func TestReadConfig(t *testing.T) {
 		#当target文件不存在时，创建
 		createTargetFolder = true
 
+		#当没有匹配到link文件夹时是否警告，默认为false
+		warnNoMatchLinkFolder = false
+
 		#当target文件自动分配
 		targetFolders=[
 		'v:/useless/Z/Z[0-9]',
@@ -33,28 +37,33 @@ func TestReadConfig(t *testing.T) {
 		# Temp
 		useless='V:/useless/'
 		chromeCache='V:/chrome_cache'
-		firefoxCache='V:/firefox_cache'
-		appDataRoaming='{UserHome}/AppData/Roaming'
-		appDataLocal='{UserHome}/AppData/Local'
-		QQDataHome='{UserHome}/AppData/Roaming/Tencent'
 
 		[[symbolic]]
-		target = '@'
+		target = '{useless}/Z'
 		link = [
-		'filw@v:/|log.|/tt',
+			'fil@v:/|log.|/tt',
+		]
+
+		[[symbolic]]
+		target = '<auto>'
+		link = [
+			'bcilf@v:/|log.|/tt',
 		]
 	`
-	dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 
-	//tmpfile, _ := ioutil.TempFile(dir, "config_test")
+	var configFile= filepath.Dir(os.Args[0])+"/config.toml"
+	os.Remove(configFile)
 
+	ioutil.WriteFile(configFile,[]byte(configContent),0777)
+
+	os.Args[1]="--config=config.toml"
+	os.Args[2]="--action=check"
+
+	util.Log(os.Args)
+
+	confSetting :=Read()
 	//flag.Var()
-
-	util.Log(configContent)
-	util.Log(dir)
-
-	//flag.Var()
-	util.Log("a")
+	util.Log(confSetting)
 }
 
 func TestFlag(t *testing.T) {
