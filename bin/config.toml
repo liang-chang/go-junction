@@ -1,14 +1,17 @@
 [config]
-# link文件夹重命名备份
+# link文件夹重命名备份，默认为false
 backupLinkFolder = false
 
-# 清空备份的文件夹
+# 清空备份的文件夹，默认为true
 clearBackupFolder = true
 
-#当target文件不存在时，创建
+#当target文件不存在时，默认为true
 createTargetFolder = true
 
-#当target文件自动分配
+#当没有匹配到link文件夹时是否警告，默认为true
+warnLinkNotExist = true
+
+#所有的target文件
 targetFolders=[
 'v:/useless/Z/Z[0-9]',
 ]
@@ -27,5 +30,11 @@ QQDataHome='{UserHome}/AppData/Roaming/Tencent'
 [[symbolic]]
 target = '{useless}/Z'
 link = [
-'filw@v:/|log.|/tt',
+'fil@v:/|log.|/tt',
+]
+
+[[symbolic]]
+target = '<auto>'
+link = [
+'bcilf@v:/|log.|/tt',
 ]
