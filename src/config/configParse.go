@@ -36,6 +36,7 @@ const (
 */
 func Read() Setting {
 	conf := readConfig()
+	setTargetFolders(&conf)
 	setBuildInPathAlias(&conf)
 	for i, symbCopy := range conf.Symbolic {
 		symbolic := &conf.Symbolic[i]
@@ -46,6 +47,21 @@ func Read() Setting {
 		symbolic.Target = resolvePathAlias(symbolic.Target, conf.PathAlias)
 	}
 	return conf
+}
+
+func setTargetFolders(conf *Setting) {
+	config := conf.Config
+
+	conf.Config.TargetFolders = make(map[string]int)
+	var tartgetMap = &conf.Config.TargetFolders
+	for _, value := range config.TargetFolderPattern {
+		matches, _ := filepath.Glob(value)
+		if len(matches) > 0 {
+			for _, m := range matches {
+				(*tartgetMap)[strings.Replace(m, `\`, `/`, -1)] = 0
+			}
+		}
+	}
 }
 
 func setBuildInPathAlias(conf *Setting) {

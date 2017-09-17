@@ -1,10 +1,10 @@
 package action
 
 import (
-	"os"
-	"testing"
 	"fmt"
+	"os"
 	"path/filepath"
+	"testing"
 )
 
 func TestGetMatchDirectory(t *testing.T) {

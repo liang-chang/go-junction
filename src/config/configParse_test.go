@@ -2,14 +2,16 @@ package config
 
 import (
 	"flag"
+	"fmt"
+	"io/ioutil"
 	"os"
+	"path/filepath"
+	"reflect"
 	"testing"
 	"util"
-	"path/filepath"
-	"io/ioutil"
 )
 
-func TestReadConfig(t *testing.T) {
+func TestReadConfig(tt *testing.T) {
 	//--config=config.toml  --action=make
 
 	var configContent = `
@@ -21,14 +23,14 @@ func TestReadConfig(t *testing.T) {
 		clearBackupFolder = true
 
 		#当target文件不存在时，创建
-		createTargetFolder = true
+		createTargetFolder = false
 
 		#当没有匹配到link文件夹时是否警告，默认为false
 		warnNoMatchLinkFolder = false
 
 		#当target文件自动分配
-		targetFolders=[
-		'v:/useless/Z/Z[0-9]',
+		TargetFolderPattern=[
+		'v:/useless/?',
 		]
 
 		[pathAlias]
@@ -37,6 +39,7 @@ func TestReadConfig(t *testing.T) {
 		# Temp
 		useless='V:/useless/'
 		chromeCache='V:/chrome_cache'
+		tempCache='{Temp}/cache'
 
 		[[symbolic]]
 		target = '{useless}/Z'
@@ -51,19 +54,51 @@ func TestReadConfig(t *testing.T) {
 		]
 	`
 
-	var configFile= filepath.Dir(os.Args[0])+"/config.toml"
+	var configFile = filepath.Dir(os.Args[0]) + "/config.toml"
 	os.Remove(configFile)
 
-	ioutil.WriteFile(configFile,[]byte(configContent),0777)
+	ioutil.WriteFile(configFile, []byte(configContent), 0777)
 
-	os.Args[1]="--config=config.toml"
-	os.Args[2]="--action=check"
+	os.Args[1] = "--config=config.toml"
+	os.Args[2] = "--action=check"
 
 	util.Log(os.Args)
 
-	confSetting :=Read()
-	//flag.Var()
-	util.Log(confSetting)
+	confSetting := Read()
+
+	util.Log("Action=", confSetting.Action)
+
+	util.Log("ConfigFile=", confSetting.ConfigFile)
+
+	config := confSetting.Config
+
+	t := reflect.TypeOf(config)
+	v := reflect.ValueOf(config)
+	for i := 0; i < v.NumField(); i++ {
+		if v.Field(i).CanInterface() { //判断是否为可导出字段
+			util.Logf("%s %s = %v \n",
+				t.Field(i).Name,
+				t.Field(i).Type,
+				v.Field(i).Interface())
+		}
+	}
+
+	util.Log("PathAlias=", confSetting.PathAlias)
+
+	for _, s := range confSetting.Symbolic {
+		t := reflect.TypeOf(s)
+		v := reflect.ValueOf(s)
+		var str = "Symbolic "
+		for i := 0; i < v.NumField(); i++ {
+			if v.Field(i).CanInterface() { //判断是否为可导出字段
+				str += fmt.Sprintf("%s = %v ,",
+					t.Field(i).Name,
+					v.Field(i).Interface())
+			}
+		}
+		util.Log(str)
+	}
+
 }
 
 func TestFlag(t *testing.T) {
@@ -76,4 +111,15 @@ func TestFlag(t *testing.T) {
 	readConfig()
 
 	util.Log(flag.Args())
+}
+
+func TestFilepathGlob(t *testing.T) {
+	matches, err := filepath.Glob("V:/useless/?")
+
+	util.Log(matches)
+	util.Log(err)
+
+	util.Logf("%s %s = %v \n", "a", "b", "c")
+
+	fmt.Print(fmt.Sprintf("%s %s = %v \n", "a", "b", "c"))
 }

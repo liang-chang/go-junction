@@ -30,6 +30,9 @@ type GlobalConfig struct {
 	CreateTargetFolder bool
 
 	//target 文件夹路径表达式，与 filepath.Glob 用法一致
+	TargetFolderPattern []string
+
+	//解析后的文件夹
 	TargetFolders map[string]int
 
 	//当没有link文件夹时是否预警

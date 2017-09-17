@@ -12,7 +12,7 @@ createTargetFolder = true
 warnNoMatchLinkFolder = false
 
 #所有的target文件
-targetFolders=[
+TargetFolderPattern=[
 'v:/useless/Z/Z[0-9]',
 ]
 

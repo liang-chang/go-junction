@@ -12,5 +12,9 @@ func init() {
 }
 
 func Log(i ...interface{}) {
-	logger.Print(i)
+	logger.Println(i...)
+}
+
+func Logf(fmt string, i ...interface{}) {
+	logger.Printf(fmt, i...)
 }

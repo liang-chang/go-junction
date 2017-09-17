@@ -23,13 +23,13 @@ go-junction.exe --config=config.toml --action=recovery
 #link文件夹重命名备份，默认为false
 backupLinkFolder = false
 
-#清空备份的文件夹，默认为true
+#清空备份的文件夹，默认为false
 clearBackupFolder = true
 
-#当target文件不存在时，默认为true
+#当target文件不存在时，默认为false
 createTargetFolder = true
 
-#当没有匹配到link文件夹时是否警告，默认为true
+#当没有匹配到link文件夹时是否警告，默认为false
 warnLinkNotExist = true
 
 #所有的target文件
