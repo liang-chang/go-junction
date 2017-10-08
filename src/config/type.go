@@ -14,9 +14,9 @@ type Setting struct {
 
 	ConfigFile string
 
-	Config    GlobalConfig
+	Config    *GlobalConfig
 	PathAlias map[string]string
-	Symbolic  []Symbolic
+	Symbolic  []*Symbolic
 }
 
 type GlobalConfig struct {
@@ -33,7 +33,7 @@ type GlobalConfig struct {
 	TargetFolderPattern []string
 
 	//解析后的文件夹
-	TargetFolders map[string]int
+	TargetFolders []string
 
 	//当没有link文件夹时是否预警
 	WarnNoMatchLinkFolder bool
@@ -56,6 +56,8 @@ type Symbolic struct {
 //
 type LinkConfig struct {
 	FolderPattern string
+
+	Target string
 
 	MatchFolder []string
 

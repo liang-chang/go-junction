@@ -15,53 +15,101 @@ import (
 )
 
 const (
-	actionParamName = "action"
+	ACTION_PARAM_NAME = "action"
 
-	actionDefault = "list" //list check make recovery
+	ACTION_DEFAULT = "list" //list check make recovery
 
-	actoinUsageText = "action can only one of those: list check make recovery"
+	ACTOIN_USAGE_TEXT = "action can only one of those: list check make recovery"
 
 	//参数默认名称
-	configParamName = "config"
+	CONFIG_PARAM_NAME = "config"
 
 	//默认配置文件夹名
-	configFileDefaultName = "config.toml"
+	CONFIG_FILE_DEFAULT_NAME = "config.toml"
 
 	//提示语
-	configUsageText = "config file name"
+	CONFIG_USAGE_TEXT = "config file name"
+
+	//auto target 的 auto 命令
+	AUTO_TARGET_AUTO = `<auto>`
+
+	//auto target 的 next 命令
+	AUTO_TARGET_NEXT = `<next>`
 )
 
 /*
    读取配置文件，并进行配置的解读；进行 path alias 的替换
 */
 func Read() Setting {
-	conf := readConfig()
-	setTargetFolders(&conf)
-	setBuildInPathAlias(&conf)
-	for i, symbCopy := range conf.Symbolic {
-		symbolic := &conf.Symbolic[i]
-		for j, linkText := range symbCopy.Link {
-			symbolic.LinkConfig = append(symbolic.LinkConfig, readLinkText(linkText, conf.PathAlias))
-			symbolic.Link[j] = resolvePathAlias(linkText, conf.PathAlias)
-		}
-		symbolic.Target = resolvePathAlias(symbolic.Target, conf.PathAlias)
-	}
-	return conf
+	//读取解析配置文件
+	setting := readConfig()
+
+	//解析 TargetFolderPattern
+	//设置所有 targetFolder
+	setTargetFoldersByPattern(&setting)
+
+	setBuildInPathAlias(&setting)
+
+	parseTargetLinkCmd(&setting)
+
+	return setting
 }
 
-func setTargetFolders(conf *Setting) {
-	config := conf.Config
+func parseTargetLinkCmd(setting *Setting) {
+	targetFolderSlice := setting.Config.TargetFolders
 
-	conf.Config.TargetFolders = make(map[string]int)
-	var tartgetMap = &conf.Config.TargetFolders
+	//解析 link 和 target 文件夹中的替换符
+	//解析 link 字符中的千个命令
+	//从可用的target 目录下剔除补手动映射的目录
+	for i, symbCopy := range setting.Symbolic {
+
+		symbolic := &setting.Symbolic[i]
+
+		(*symbolic).Target = resolvePathAlias((*symbolic).Target, setting.PathAlias)
+
+		trimTraget := strings.TrimSpace((*symbolic).Target)
+
+		var err error
+		if trimTraget != AUTO_TARGET_AUTO && trimTraget != AUTO_TARGET_NEXT {
+
+			if _, err = os.Stat(trimTraget); err == nil {
+				//格式化文件路径
+				if trimTraget, err = filepath.Abs(trimTraget); err != nil {
+					util.Logf("target=%v 是个无效文件夹", trimTraget)
+					os.Exit(1)
+				}
+
+				found := util.SliceIndex(len(targetFolderSlice), func(i int) bool { return targetFolderSlice[i] == trimTraget })
+
+				if found >= 0 {
+					targetFolderSlice = append(targetFolderSlice[:found], targetFolderSlice[found+1:]...)
+				}
+
+			}
+		}
+
+		for j, linkText := range symbCopy.Link {
+			(*symbolic).Link[j] = resolvePathAlias(linkText, setting.PathAlias)
+			(*symbolic).LinkConfig = append((*symbolic).LinkConfig, readLinkText((*symbolic).Link[j], setting.PathAlias))
+		}
+	}
+
+	setting.Config.TargetFolders = targetFolderSlice
+}
+
+func setTargetFoldersByPattern(setting *Setting) {
+
+	var tartgetMap = make([]string, 0, 50)
+	config := setting.Config
 	for _, value := range config.TargetFolderPattern {
 		matches, _ := filepath.Glob(value)
 		if len(matches) > 0 {
 			for _, m := range matches {
-				(*tartgetMap)[strings.Replace(m, `\`, `/`, -1)] = 0
+				tartgetMap = append(tartgetMap, m)
 			}
 		}
 	}
+	setting.Config.TargetFolders = tartgetMap
 }
 
 func setBuildInPathAlias(conf *Setting) {
@@ -108,7 +156,7 @@ func readLinkText(linkText string, pathAlias map[string]string) LinkConfig {
 		split = split[1:]
 	}
 
-	ret.FolderPattern = resolvePathAlias(split[0], pathAlias)
+	ret.FolderPattern = split[0]
 	return ret
 }
 
@@ -139,9 +187,9 @@ func setLinkCmd(cmd string, linkConfg *LinkConfig) {
 }
 
 func readConfig() Setting {
-	var actionName = flag.String(actionParamName, actionDefault, actoinUsageText)
+	var actionName = flag.String(ACTION_PARAM_NAME, ACTION_DEFAULT, ACTOIN_USAGE_TEXT)
 
-	var configFileName = flag.String(configParamName, configFileDefaultName, configUsageText)
+	var configFileName = flag.String(CONFIG_PARAM_NAME, CONFIG_FILE_DEFAULT_NAME, CONFIG_USAGE_TEXT)
 
 	flag.Parse()
 

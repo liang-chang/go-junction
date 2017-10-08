@@ -9,5 +9,4 @@ import (
 
 func TestGetMatchDirectory(t *testing.T) {
 	fmt.Print(filepath.Dir(os.Args[0]))
-
 }

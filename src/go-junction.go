@@ -15,10 +15,10 @@ func init() {
 
 func main() {
 
-	logger.Printf("Read config ……")
+	logger.Printf("Parse config ……")
 	confSetting := config.Read()
 
-	logger.Printf("MatchDirectory ……")
+	logger.Printf("Match Link And Target Directory ……")
 	config.MatchDirectory(&confSetting)
 
 	logger.Printf("Call action:%s ……", confSetting.Action)

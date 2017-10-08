@@ -17,6 +17,7 @@ go-junction.exe --config=config.toml --action=recovery
 
 ````
 
+
 ## 示例配置
 ````
 [config]
@@ -33,7 +34,7 @@ createTargetFolder = true
 warnLinkNotExist = true
 
 #所有的target文件
-targetFolders=[
+TargetFolderPattern=[
 'v:/useless/Z/Z[0-9]',
 ]
 
@@ -55,7 +56,7 @@ link = [
 ]
 
 [[symbolic]]
-target = '<auto>'
+target = '<auto>|<next>'
 link = [
 'bcilf@v:/|log.|/tt',
 ]
@@ -106,7 +107,10 @@ target = '{useless}/Z'<br/>
 指向 {useless}/Z 的文件夹
 
 target = '\<auto\>'<br/>
-自动在所有可用的target目录下挑选一个文件夹，下一个可用的文件夹
+自动在所有可用的target目录下挑选一个或多个文件夹，有n个link文件夹，就会有n个target文件夹
+
+target = '\<next\>'<br/>
+自动在所有可用的target目录下挑选一个文件夹，有n个link文件夹，只会有一个target文件夹
 
 
 ## link 配置

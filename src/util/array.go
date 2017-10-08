@@ -1,8 +1,8 @@
 package util
 
 import (
-	"reflect"
 	"errors"
+	"reflect"
 )
 
 func Contain(target interface{}, obj interface{}) (bool, error) {
@@ -21,4 +21,13 @@ func Contain(target interface{}, obj interface{}) (bool, error) {
 	}
 
 	return false, errors.New("not in array")
+}
+
+func SliceIndex(limit int, predicate func(i int) bool) int {
+	for i := 0; i < limit; i++ {
+		if predicate(i) {
+			return i
+		}
+	}
+	return -1
 }

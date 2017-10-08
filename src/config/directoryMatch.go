@@ -3,23 +3,28 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"regexp"
 	"strings"
-	"os"
 )
 
 func MatchDirectory(conf *Setting) {
 	for i, symb := range conf.Symbolic {
 		for j, linkConf := range symb.LinkConfig {
+
+			config := conf.Symbolic[i].LinkConfig[j]
+
 			matchedDir := getMatchDirectory(linkConf.FolderPattern, linkConf)
-			conf.Symbolic[i].LinkConfig[j].MatchFolder = append(conf.Symbolic[i].LinkConfig[j].MatchFolder, matchedDir...)
+			config.MatchFolder = append(config.MatchFolder, matchedDir...)
+
+			config.Target = symb.Target
 		}
 	}
 }
 
 func getMatchDirectory(pathPattern string, linkConfg LinkConfig) []string {
 
-	diskReg := regexp.MustCompile(`(?i)[a-z]:`)//`(?i)[a-z]:(\\|/)`
+	diskReg := regexp.MustCompile(`(?i)[a-z]:`) //`(?i)[a-z]:(\\|/)`
 
 	matchRet := diskReg.FindStringSubmatch(pathPattern)
 
@@ -30,7 +35,7 @@ func getMatchDirectory(pathPattern string, linkConfg LinkConfig) []string {
 
 	var diskName string = matchRet[0]
 
-	dirReg := regexp.MustCompile(`(?:\\|/)((?:\|[^|]+\|)|[^/\\]+)`)//`(\\|/)((?:\|[^|]+\|)|[^/\\]+)`
+	dirReg := regexp.MustCompile(`(?:\\|/)((?:\|[^|]+\|)|[^/\\]+)`) //`(\\|/)((?:\|[^|]+\|)|[^/\\]+)`
 
 	pathPattern = strings.Trim(pathPattern, " ")
 
@@ -44,7 +49,7 @@ func getMatchDirectory(pathPattern string, linkConfg LinkConfig) []string {
 		return make([]string, 0, 0)
 	}
 
-	matchedDirs = append(matchedDirs, diskName + FILE_SPLIT)
+	matchedDirs = append(matchedDirs, diskName+FILE_SPLIT)
 
 	dirPartsLen := len(dirParts)
 
@@ -52,7 +57,7 @@ func getMatchDirectory(pathPattern string, linkConfg LinkConfig) []string {
 
 		namePattern := v[1]
 
-		isLast := index + 1 == dirPartsLen
+		isLast := index+1 == dirPartsLen
 
 		//普通路径字串
 		//最后一个路径可以不存在
@@ -77,10 +82,10 @@ func appendPatternDir(parsedDirs []string, namePattern string, linkConfg LinkCon
 	nameReg := regexp.MustCompile(namePattern)
 
 	match := func(d os.FileInfo) bool {
-		return d.IsDir()&&nameReg.MatchString(d.Name())
+		return d.IsDir() && nameReg.MatchString(d.Name())
 	}
 
-	retDirs := traversalDir(parsedDirs, namePattern, match, linkConfg);
+	retDirs := traversalDir(parsedDirs, namePattern, match, linkConfg)
 
 	return retDirs
 }
@@ -89,22 +94,22 @@ func appendPatternDir(parsedDirs []string, namePattern string, linkConfg LinkCon
 dirs 中添加 appendDir
 */
 func appendDir(parsedDirs []string, appendDir string, linkConfg LinkConfig, isLast bool) []string {
-	if linkConfg.ForeceCreate || (linkConfg.LastDirAppender&&isLast) {
+	if linkConfg.ForeceCreate || (linkConfg.LastDirAppender && isLast) {
 		var ret []string = make([]string, 0, 16)
 		for _, v := range parsedDirs {
 			//fix：出现 e://temp 这种路径情况
 			v = trimFileSplit(v)
-			ret = append(ret, v + FILE_SPLIT + appendDir)
+			ret = append(ret, v+FILE_SPLIT+appendDir)
 		}
 		return ret
 	}
 
 	appendDir = strings.ToLower(appendDir)
 	match := func(d os.FileInfo) bool {
-		return d.IsDir()&&strings.ToLower(d.Name()) == appendDir
+		return d.IsDir() && strings.ToLower(d.Name()) == appendDir
 	}
 
-	retDirs := traversalDir(parsedDirs, appendDir, match, linkConfg);
+	retDirs := traversalDir(parsedDirs, appendDir, match, linkConfg)
 	return retDirs
 }
 
@@ -121,7 +126,7 @@ func traversalDir(parsedDirs []string, appendDir string, match dirMatch, linkCon
 
 		for _, d := range childDirs {
 			if match(d) {
-				retDirs = append(retDirs, v + FILE_SPLIT + d.Name())
+				retDirs = append(retDirs, v+FILE_SPLIT+d.Name())
 			}
 		}
 	}
