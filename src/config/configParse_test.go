@@ -6,9 +6,31 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"syscall"
 	"testing"
 	"util"
 )
+
+func TestMain(m *testing.M) {
+
+	workDirPtr, _ := syscall.UTF16PtrFromString(filepath.Dir(os.Args[0]))
+	syscall.SetCurrentDirectory(workDirPtr)
+
+	//单元测试前创文件夹
+	var cache = []string{"chrome", "firefox", "opera", "safari"}
+	for _, name := range cache {
+		os.Mkdir(name+"_cache", os.ModePerm)
+	}
+
+	var start = int('A')
+	var end = int('Z')
+
+	for i := start; i <= end; i++ {
+		os.MkdirAll(`useless/`+string(rune(i)), os.ModePerm)
+	}
+
+	os.Exit(m.Run())
+}
 
 func TestReadConfig(tt *testing.T) {
 	//--config=config.toml  --action=make
@@ -16,20 +38,6 @@ func TestReadConfig(tt *testing.T) {
 	var preSetting = Setting{
 		Action:     "check",
 		ConfigFile: "config_test.toml"}
-
-	targetFolderPattern := [2]string{"v:/useless/?", "v:/*_cache"}
-
-	var preGlobalConfig = GlobalConfig{
-		BackupLinkFolder:      false,
-		ClearBackupFolder:     true,
-		CreateTargetFolder:    false,
-		TargetFolderPattern:   targetFolderPattern[:],
-		WarnNoMatchLinkFolder: false,
-	}
-
-	preSetting.Config = &preGlobalConfig
-
-	setTargetFoldersByPattern(&preSetting)
 
 	var configContent = `
 		[config]
@@ -47,16 +55,16 @@ func TestReadConfig(tt *testing.T) {
 
 		#当target文件自动分配
 		TargetFolderPattern=[
-		'v:/useless/?',
-		'v:/*_cache',
+		'useless/?',
+		'*_cache',
 		]
 
 		[pathAlias]
 		#build in path variable
 		# UserHome
 		# Temp
-		useless='V:/useless/'
-		chromeCache='V:/chrome_cache'
+		useless='useless'
+		chromeCache='chrome_cache'
 		tempCache='{Temp}/cache'
 
 		[[symbolic]]
@@ -72,7 +80,7 @@ func TestReadConfig(tt *testing.T) {
 		]
 
 		[[symbolic]]
-		target = 'v:/safari_cache'
+		target = 'safari_cache'
 		link = [
 			'bcilf@{UserHome}/tt',
 		]
